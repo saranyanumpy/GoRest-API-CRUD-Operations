@@ -19,10 +19,10 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '16'  # Newman requires Node 16+
+          node-version: '16'
 
-      - name: Install Newman
-        run: npm install -g newman
+      - name: Install Newman + HTML Reporter
+        run: npm install -g newman newman-reporter-html
 
       - name: Run Postman Tests
         run: |
