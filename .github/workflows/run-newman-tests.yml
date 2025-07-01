@@ -3,10 +3,10 @@ name: Run Newman Tests
 on:
   push:
     branches:
-      - main  # Runs on any push to the 'main' branch
+      - main
   pull_request:
     branches:
-      - main  # Runs when a pull request is made to 'main'
+      - main
 
 jobs:
   test:
@@ -14,12 +14,12 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3  # Use v3 (v2 is a bit old)
+        uses: actions/checkout@v3  # upgraded
 
       - name: Set up Node.js
-        uses: actions/setup-node@v3  # Upgrade to v3 for stability
+        uses: actions/setup-node@v3  # upgraded
         with:
-          node-version: '14'  # You can upgrade to '16' or '18' if your project supports it
+          node-version: '14'  # or bump to '16' or '18' if supported
 
       - name: Install Newman
         run: npm install -g newman
