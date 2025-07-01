@@ -14,12 +14,12 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3  # upgraded
+        uses: actions/checkout@v3  # upgraded to v3
 
       - name: Set up Node.js
-        uses: actions/setup-node@v3  # upgraded
+        uses: actions/setup-node@v3  # upgraded to v3
         with:
-          node-version: '14'  # or bump to '16' or '18' if supported
+          node-version: '16'  # updated from 14 to 16 for Newman compatibility
 
       - name: Install Newman
         run: npm install -g newman
