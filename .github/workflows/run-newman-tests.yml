@@ -21,17 +21,17 @@ jobs:
         with:
           node-version: '16'
 
-      - name: Install Newman + HTML Reporter
-        run: npm install -g newman newman-reporter-html
+      - name: Install Newman + HTMLExtra Reporter
+        run: npm install -g newman newman-reporter-htmlextra
 
       - name: Run Postman Tests
         run: |
           newman run "postman/GoRest API- CRUD Operations.postman_collection.json" \
             -e "postman/GoRest-QA.postman_environment.json" \
             -d "data/GoRest.csv" \
-            -r cli,html --reporter-html-export ./newman-report.html
+            -r cli,htmlextra --reporter-htmlextra-export ./newman-report.html
 
-      - name: List files in workspace
+      - name: List files in workspace (for debug)
         run: ls -R
 
       - name: Upload Newman Report
