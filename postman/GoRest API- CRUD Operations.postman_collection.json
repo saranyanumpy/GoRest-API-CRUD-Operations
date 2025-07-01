@@ -1,0 +1,5474 @@
+{
+	"info": {
+		"_postman_id": "5fc71da5-0123-4858-aa61-eeae3f442ef2",
+		"name": "GoRest API: CRUD Operations",
+		"description": "Get all users post",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "14321503"
+	},
+	"item": [
+		{
+			"name": "Switch Folder",
+			"item": [
+				{
+					"name": "SwitchRequest - Route by TestType",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const testType = pm.iterationData.get(\"TestType\");\r",
+									"\r",
+									"// A lookup map for the request names\r",
+									"const requestMap = {\r",
+									"    // Positive and general negative cases\r",
+									"    \"POST-VALID\": \"[users-001] Create new user with valid JSON\",\r",
+									"    \"POST-INVALID\": \"[users-023] Create new user with invalid JSON\",\r",
+									"    \"POST-EXISTING\": \"[users-024] Create new user with existing JSON data\",\r",
+									"    \"POST-MISSING-NAME\": \"[users-025] Create new user with missing Name\",\r",
+									"    \"POST-INVALID-EMAIL\": \"[users-026] Create new user with invalid email\",\r",
+									"    \"POST-INVALID-GENDER\": \"[users-027] Create new user with invalid gender\",\r",
+									"    \"GET-ALL-USERS-BAD-PAGE\": \"[users-028] Get all users with USERS-BAD-PAGE\",\r",
+									"    \"GET-INVALID-USERID\": \"[users-029] Get single user with invalid userID\",\r",
+									"    \"PUT-INVALID-EMAIL\": \"[users-030] Put update Invalid Email\",\r",
+									"    \"PUT-MISSING-FIELD\": \"[users-031] Put update user with missing field\",\r",
+									"    \"PATCH-INVALID-EMAIL\": \"[users-032] PATCH update user with INVALID EMAIL\",\r",
+									"\r",
+									"    // POSTS-* mapped logically to existing requests\r",
+									"    \"POSTS-POST-INVALID-USERID\": \"[posts-033] create a user post with invalid user ID Copy\",\r",
+									"    \"POSTS-POST-INVALID-BODY\": \"[posts-034] create a user post with valid user ID and invalid body\",\r",
+									"    \"POSTS-POST-NOBODY\": \"[posts-035] create a user post with valid user ID without body\",\r",
+									"    \"POSTS-GET-ALL-USERS-BAD-PAGE\": \"[posts-036 all users post with BADPAGE\",\r",
+									"    \"POSTS-GETBY-INVALID-USERID\": \"[posts-037]  posted post by using invalid post ID\",\r",
+									"    \"POSTS-PUT-INVALID-BODY\": \"[posts-038] update user post title and body with Invalid body\",\r",
+									"    \"POSTS-PUT-INVALID-POSTID\": \"[posts-039] update user post title and body with valid body by invalid post ID\",\r",
+									"    \"POSTS-PUT-MISSING-FIELD\": \"[posts-040] update user post title and body with missing field\",\r",
+									"    \"POSTS-PATCH-MISSING-FIELD\": \"[posts-041] update user post title with missing field\",\r",
+									"    \"POSTS-PATCH-INVALID-POSTID\": \"[posts-042] update user post title with invalid postid\",\r",
+									"\r",
+									"    // COMMENTS-* mapped logically to existing requests\r",
+									"    \"COMMENTS-POST-NOBODY\": \"[comments-043]-POST one comment with NO BODY\",\r",
+									"    \"COMMENTS-POST-NOEMAIL\": \"[comments-044]-POST one comment with NO EMAIL\",\r",
+									"    \"COMMENTS-POST-INVALID-POSTID\": \"[comments-045]-POST one comment within invalid post_id\",\r",
+									"    \"COMMENTS-POST-NULL-JSON\": \"[comments-046]-POST one comment with null json\",\r",
+									"    \"COMMENTS-GETALL-INVALID-ENDPOINT\": \"[comments-047]-GET all  comments with invalid endpoint\",\r",
+									"    \"COMMENTS-GETBY-INVALID-POSTID\": \"[comments-048]-GET BYID users comments within invalid id\",\r",
+									"    \"COMMENTS-PUT-INVALID-JSON\": \"[comments-049]-PUT one comment within INvalid json\",\r",
+									"    \"COMMENTS-PATCH-MISSING-FIELD\": \"[comments-050]-PATCH one comment with MISSING FIELD\",\r",
+									"\r",
+									"    //****DELETE */\r",
+									"    \"DELETE-COMMENT-INVALIDID\": \"[comments-051]-DEL one comment with invalid id\",\r",
+									"    \"DELETE-POST-INVALIDID\": \"[posts-052] user posts by valid inpost ID\",\r",
+									"    \"DELETE-USER-INVALIDID\": \"[users-053]- Delete unavailable user\",\r",
+									"\r",
+									"};\r",
+									"\r",
+									"if (requestMap[testType]) {\r",
+									"    pm.execution.setNextRequest(requestMap[testType]);\r",
+									"} else {\r",
+									"    console.log(`⚠️ Unknown or unsupported TestType: ${testType}`);\r",
+									"    pm.execution.setNextRequest(null); // Ends this iteration\r",
+									"}\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://postman-echo.com/get",
+							"protocol": "https",
+							"host": [
+								"postman-echo",
+								"com"
+							],
+							"path": [
+								"get"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Positive Folder",
+			"item": [
+				{
+					"name": "./users",
+					"item": [
+						{
+							"name": "[users-001] Create new user with valid JSON",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const testType = pm.iterationData.get(\"TestType\");\r",
+											"\r",
+											"if (!testType || !testType.startsWith(\"POST-VALID\")) {\r",
+											"    console.log(`⏭ Skipping validation for Positive Folder | TestType: ${testType}`);\r",
+											"    return;\r",
+											"}\r",
+											"\r",
+											"console.log(`✅ Validating Positive Test for TestType: ${testType}`);\r",
+											"\r",
+											"// === Parse Response ===\r",
+											"let jsonData;\r",
+											"try {\r",
+											"    jsonData = pm.response.json();\r",
+											"} catch (e) {\r",
+											"    console.error(\"Error parsing JSON response\", e);\r",
+											"    jsonData = {};\r",
+											"}\r",
+											"\r",
+											"console.log(\"POST Response Body:\", jsonData);\r",
+											"\r",
+											"// === Assertions and UserId Handling ===\r",
+											"if (pm.response.code === 201) {\r",
+											"    console.log(\"POST-VALID request succeeded.\");\r",
+											"    pm.environment.set(\"UserId\", jsonData.data.id);  // ✅ Store UserId\r",
+											"    console.log(\"UserId stored:\", jsonData.data.id);\r",
+											"}\r",
+											"\r",
+											"pm.test(\"Status code is 201\", function () {\r",
+											"    pm.expect(pm.response.code).to.eql(201);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response time is under 2000ms\", function () {\r",
+											"    pm.expect(pm.response.responseTime).to.be.below(2000);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response contains 'data' key\", function () {\r",
+											"    pm.expect(jsonData.data).to.not.be.undefined;\r",
+											"});\r",
+											"\r",
+											"pm.test(\"User Full Name matches test data\", function () {\r",
+											"    pm.expect(jsonData.data.name).to.eql(pm.environment.get(\"post_Name\"));\r",
+											"});\r",
+											"\r",
+											"pm.test(\"User Gender matches test data\", function () {\r",
+											"    pm.expect(jsonData.data.gender).to.eql(pm.iterationData.get(\"post_gender\"));\r",
+											"});\r",
+											"\r",
+											"pm.test(\"User Random Email matches test data\", function () {\r",
+											"    pm.expect(jsonData.data.email).to.eql(pm.environment.get(\"post_Email\"));\r",
+											"});\r",
+											"\r",
+											"pm.test(\"User Status matches test data\", function () {\r",
+											"    pm.expect(jsonData.data.status).to.eql(pm.iterationData.get(\"post_status\"));\r",
+											"});\r",
+											"\r",
+											"// === SCHEMA VALIDATION ===\r",
+											"const schema = {\r",
+											"    type: \"object\",\r",
+											"    required: [\"data\"],\r",
+											"    properties: {\r",
+											"        data: {\r",
+											"            type: \"object\",\r",
+											"            required: [\"id\", \"name\", \"gender\", \"email\", \"status\"],\r",
+											"            properties: {\r",
+											"                id: { type: \"number\" },\r",
+											"                name: { type: \"string\" },\r",
+											"                gender: { type: \"string\" },\r",
+											"                email: { type: \"string\", format: \"email\" },\r",
+											"                status: { type: \"string\" }\r",
+											"            }\r",
+											"        }\r",
+											"    }\r",
+											"};\r",
+											"\r",
+											"pm.test(\"Schema is valid\", function () {\r",
+											"    pm.response.to.have.jsonSchema(schema);\r",
+											"});\r",
+											"\r",
+											"// === HEADER VALIDATION ===\r",
+											"pm.test(\"Content-Type includes JSON\", function () {\r",
+											"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");\r",
+											"});\r",
+											"\r",
+											"console.log(\"✅ Done with POST request.\");\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const testType = pm.iterationData.get(\"TestType\");\r",
+											"\r",
+											"if (!testType) {\r",
+											"    console.warn(\"⚠️ TestType is not defined in data file.\");\r",
+											"} else {\r",
+											"    console.log(`🔍 Running iteration with TestType: ${testType}`);\r",
+											"}"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"name\": \"{{post_Name}}\",\r\n  \"gender\": \"{{post_gender}}\",\r\n  \"email\": \"{{post_Email}}\",\r\n  \"status\": \"{{post_status}}\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}{{usersEndpoint}}",
+									"host": [
+										"{{BASE_URL}}{{usersEndpoint}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "[users-002] Get all users without parameter",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"let jsonData = pm.response.json();\r",
+											"let users = jsonData.data;\r",
+											"\r",
+											"// === Basic Validations ===\r",
+											"pm.test(\"Status code is 200\", () => {\r",
+											"    pm.expect(pm.response.code).to.eql(200);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Environment variable 'BASE_URL' is set\", () => {\r",
+											"    pm.expect(pm.environment.get(\"BASE_URL\")).to.not.be.undefined;\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response time is under 10000ms\", () => {\r",
+											"    pm.expect(pm.response.responseTime).to.be.below(10000);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Content-Type includes JSON\", () => {\r",
+											"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response is an array of users\", () => {\r",
+											"    pm.expect(users).to.be.an(\"array\").that.is.not.empty;\r",
+											"});\r",
+											"\r",
+											"// === Field and Data Validations ===\r",
+											"const requiredFields = [\"id\", \"name\", \"email\", \"gender\", \"status\"];\r",
+											"\r",
+											"// Loop over users\r",
+											"users.forEach((user, index) => {\r",
+											"    pm.test(`User ${index + 1} has all required fields`, () => {\r",
+											"        requiredFields.forEach(field => {\r",
+											"            pm.expect(user).to.have.property(field);\r",
+											"        });\r",
+											"    });\r",
+											"\r",
+											"    pm.test(`User ${index + 1} field types are correct`, () => {\r",
+											"        pm.expect(user.id).to.be.a(\"number\");\r",
+											"        pm.expect(user.name).to.be.a(\"string\");\r",
+											"        pm.expect(user.gender).to.be.a(\"string\");\r",
+											"        pm.expect(user.email).to.be.a(\"string\");\r",
+											"        pm.expect(user.status).to.be.a(\"string\");\r",
+											"    });\r",
+											"\r",
+											"    pm.test(`User ${index + 1} has valid email format`, () => {\r",
+											"        pm.expect(user.email).to.match(/^\\S+@\\S+\\.\\S+$/);\r",
+											"    });\r",
+											"\r",
+											"    \r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"// pm.sendRequest({\r",
+											"//     url: `https://gorest.co.in/public/v1/users`,\r",
+											"//     method: 'GET',\r",
+											"//     headers: {\r",
+											"//         'Authorization': `Bearer ${pm.environment.get('BearerToken')}`\r",
+											"//     }\r",
+											"// }, function (err, res) {\r",
+											"//     if (err) {\r",
+											"//         console.error(\"GET all request error:\", err);\r",
+											"//     } else {\r",
+											"//         pm.test(\"GET all users - Status is 200\", function () {\r",
+											"//             pm.expect(res.code).to.eql(200);  // Expect 200 status code for successful GET request\r",
+											"//         });\r",
+											"//         console.log(\"GET all response:\", res.json());\r",
+											"//     }\r",
+											"// });\r",
+											"// const testType = pm.iterationData.get(\"TestType\");\r",
+											"\r",
+											"// if (!testType.startsWith(\"GET-\")) {\r",
+											"//     console.log(`⏭ Skipping GET request for TestType: ${testType}`);\r",
+											"//     return pm.execution.skipRequest();\r",
+											"// }\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{BASE_URL}}{{usersEndpoint}}",
+									"host": [
+										"{{BASE_URL}}{{usersEndpoint}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "[users-003] Get all users with parameter page",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"// const testType = pm.iterationData.get(\"TestType\");\r",
+											"\r",
+											"// if (!testType.startsWith(\"GET-\")) {\r",
+											"//     console.log(`⏭ Skipping GET request for TestType: ${testType}`);\r",
+											"//     return pm.execution.skipRequest();\r",
+											"// }\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{BASE_URL}}{{usersEndpoint}}?page=2",
+									"host": [
+										"{{BASE_URL}}{{usersEndpoint}}"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "2"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "[users-004] Get single user with valid ID",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"let jsonData = pm.response.json(); // Parse the response\r",
+											"let user = jsonData.data; // Access the nested object under \"data\"\r",
+											"\r",
+											"// Status code check\r",
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.expect(pm.response.code).to.eql(200);\r",
+											"});\r",
+											"\r",
+											"// ID match\r",
+											"pm.test(\"User ID matches the one sent\", function () {\r",
+											"    pm.expect(user.id).to.eql(Number(pm.environment.get(\"UserId\")));\r",
+											"});\r",
+											"\r",
+											"// Required fields check\r",
+											"pm.test(\"Response has all required fields\", function () {\r",
+											"    const requiredFields = [\"id\", \"name\", \"email\", \"gender\",\"status\"];\r",
+											"    requiredFields.forEach(field => {\r",
+											"        pm.expect(user).to.have.property(field);\r",
+											"    });\r",
+											"});\r",
+											"\r",
+											"// Field type checks\r",
+											"pm.test(\"Field types are correct\", function () {\r",
+											"    pm.expect(user.id).to.be.a(\"number\");\r",
+											"    pm.expect(user.name).to.be.a(\"string\");\r",
+											"    pm.expect(user.gender).to.be.a(\"string\");\r",
+											"    pm.expect(user.email).to.be.a(\"string\");\r",
+											"    pm.expect(user.status).to.be.a(\"string\");\r",
+											"});\r",
+											"\r",
+											"// Email format validation\r",
+											"pm.test(\"Valid email format\", function () {\r",
+											"    pm.expect(user.email).to.match(/^\\S+@\\S+\\.\\S+$/);\r",
+											"});\r",
+											"\r",
+											"// UserId is set\r",
+											"if (!pm.environment.get(\"UserId\")) {\r",
+											"    throw new Error(\"Environment variable 'UserId' is not set. Please set it before making GET by ID request.\");\r",
+											"} else {\r",
+											"    console.log(\"UserId:\", pm.environment.get(\"UserId\"));\r",
+											"}\r",
+											"\r",
+											"// BASE_URL check\r",
+											"if (!pm.environment.get(\"BASE_URL\")) {\r",
+											"    throw new Error(\"Environment variable 'BASE_URL' is not set\");\r",
+											"} else {\r",
+											"    console.log(\"BASE_URL:\", pm.environment.get(\"BASE_URL\"));\r",
+											"}\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{BASE_URL}}{{usersEndpoint}}/{{UserId}}",
+									"host": [
+										"{{BASE_URL}}{{usersEndpoint}}"
+									],
+									"path": [
+										"{{UserId}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "[users-005] Put update user with valid ID",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"let jsonData;\r",
+											"try {\r",
+											"    jsonData = pm.response.json();\r",
+											"} catch (e) {\r",
+											"    console.error(\"Error parsing JSON response\", e);\r",
+											"    jsonData = {};\r",
+											"}\r",
+											"\r",
+											"pm.test(\"Status code is correct\", function () {\r",
+											"    pm.expect(pm.response.code).to.eql(Number(pm.iterationData.get(\"put_statuscode\")));\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response time is under 2000ms\", function () {\r",
+											"    pm.expect(pm.response.responseTime).to.be.below(2000);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response contains 'data' key\", function () {\r",
+											"    pm.expect(jsonData.data).to.not.be.undefined;\r",
+											"});\r",
+											"\r",
+											"if (pm.response.code === 200) {\r",
+											"    let user = jsonData.data;\r",
+											"\r",
+											"    pm.environment.set(\"UserId\", user.id);\r",
+											"    console.log(\"UserId stored:\", user.id);\r",
+											"\r",
+											"    pm.test(\"Response has UserId\", function () {\r",
+											"        pm.expect(user.id).to.not.be.undefined;\r",
+											"    });\r",
+											"\r",
+											"    pm.test(\"User Full Name matches test data\", function () {\r",
+											"        pm.expect(user.name).to.eql(pm.environment.get(\"put_name\"));\r",
+											"    });\r",
+											"\r",
+											"    pm.test(\"User Gender matches test data\", function () {\r",
+											"        pm.expect(user.gender).to.eql(pm.iterationData.get(\"put_gender\"));\r",
+											"    });\r",
+											"\r",
+											"    pm.test(\"User Random Email matches test data\", function () {\r",
+											"        pm.expect(user.email).to.eql(pm.environment.get(\"put_email\"));\r",
+											"    });\r",
+											"\r",
+											"    pm.test(\"User Status matches test data\", function () {\r",
+											"        pm.expect(user.status).to.eql(pm.iterationData.get(\"put_status\"));\r",
+											"    });\r",
+											"\r",
+											"} else if (pm.response.code === 400) {\r",
+											"    pm.test(\"Request failed with validation error\", function () {\r",
+											"        const errorMessage = jsonData.message || \"No error message returned\";\r",
+											"        console.log(\"Validation error:\", errorMessage);\r",
+											"        pm.expect.fail(\"Request failed with 400: \" + errorMessage);\r",
+											"    });\r",
+											"}\r",
+											"\r",
+											"const schema = {\r",
+											"    type: \"object\",\r",
+											"    required: [\"data\"],\r",
+											"    properties: {\r",
+											"        data: {\r",
+											"            type: \"object\",\r",
+											"            required: [\"id\", \"name\", \"gender\", \"email\", \"status\"],\r",
+											"            properties: {\r",
+											"                id: { type: \"number\" },\r",
+											"                name: { type: \"string\" },\r",
+											"                gender: { type: \"string\" },\r",
+											"                email: { type: \"string\", format: \"email\" },\r",
+											"                status: { type: \"string\" }\r",
+											"            }\r",
+											"        }\r",
+											"    }\r",
+											"};\r",
+											"\r",
+											"pm.test(\"Schema is valid\", function () {\r",
+											"    pm.response.to.have.jsonSchema(schema);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Content-Type includes JSON\", function () {\r",
+											"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const testType = pm.iterationData.get(\"TestType\");\r",
+											"if (testType !== \"POST-VALID\") {\r",
+											"    console.log(`⏭️ Skipping ${pm.info.requestName} | TestType: ${testType}`);\r",
+											"    pm.execution.skipRequest();\r",
+											"    return;\r",
+											"}\r",
+											"// Clear any previous values for put_* to avoid conflicts\r",
+											"pm.environment.unset(\"put_name\");\r",
+											"pm.environment.unset(\"put_gender\");\r",
+											"pm.environment.unset(\"put_email\");\r",
+											"pm.environment.unset(\"put_status\");\r",
+											"\r",
+											"// Access the iteration data (from CSV) and set as environment variables\r",
+											"const putName = pm.iterationData.get(\"put_name\");\r",
+											"const putGender = pm.iterationData.get(\"put_gender\");\r",
+											"const putEmail = pm.iterationData.get(\"put_email\");\r",
+											"const putStatus = pm.iterationData.get(\"put_status\");\r",
+											"\r",
+											"// Set them as environment variables for use in the request body\r",
+											"pm.environment.set(\"put_name\", putName);\r",
+											"pm.environment.set(\"put_gender\", putGender);\r",
+											"pm.environment.set(\"put_email\", putEmail);\r",
+											"pm.environment.set(\"put_status\", putStatus);\r",
+											"\r",
+											"\r",
+											"\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"{{put_name}}\", \r\n    \"gender\": \"{{put_gender}}\", \r\n    \"email\": \"{{put_email}}\", \r\n    \"status\": \"{{put_status}}\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}{{usersEndpoint}}/{{UserId}}",
+									"host": [
+										"{{BASE_URL}}{{usersEndpoint}}"
+									],
+									"path": [
+										"{{UserId}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "[users-006] Put update partial user",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const testType = pm.iterationData.get(\"TestType\");\r",
+											"if (testType !== \"POST-VALID\") {\r",
+											"    console.log(`⏭️ Skipping ${pm.info.requestName} | TestType: ${testType}`);\r",
+											"    pm.execution.skipRequest();\r",
+											"    return;\r",
+											"}// Clear any previous values for put_* to avoid conflicts\r",
+											"pm.environment.unset(\"patch_name\");\r",
+											"pm.environment.unset(\"patch_gender\");\r",
+											"pm.environment.unset(\"patch_email\");\r",
+											"pm.environment.unset(\"patch_status\");\r",
+											"\r",
+											"// Access the iteration data (from CSV) and set as environment variables\r",
+											"const patchName = pm.iterationData.get(\"patch_name\");\r",
+											"const patchGender = pm.iterationData.get(\"patch_gender\");\r",
+											"const patchEmail = pm.iterationData.get(\"patch_email\");\r",
+											"const patchStatus = pm.iterationData.get(\"patch_status\");\r",
+											"\r",
+											"// Set them as environment variables for use in the request body\r",
+											"pm.environment.set(\"patch_name\", patchName);\r",
+											"pm.environment.set(\"patch_gender\", patchGender);\r",
+											"pm.environment.set(\"patch_email\", patchEmail);\r",
+											"pm.environment.set(\"patch_status\", patchStatus);\r",
+											"\r",
+											"\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"let jsonData;\r",
+											"try {\r",
+											"    jsonData = pm.response.json();\r",
+											"} catch (e) {\r",
+											"    console.error(\"Error parsing JSON response\", e);\r",
+											"    jsonData = {};\r",
+											"}\r",
+											"\r",
+											"pm.test(\"Status code is correct\", function () {\r",
+											"    pm.expect(pm.response.code).to.eql(Number(pm.iterationData.get(\"patch_statuscode\")));\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response time is under 2000ms\", function () {\r",
+											"    pm.expect(pm.response.responseTime).to.be.below(2000);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response contains 'data' key\", function () {\r",
+											"    pm.expect(jsonData.data).to.not.be.undefined;\r",
+											"});\r",
+											"\r",
+											"if (pm.response.code === 200) {\r",
+											"    let user = jsonData.data;\r",
+											"\r",
+											"    pm.environment.set(\"UserId\", user.id);\r",
+											"    console.log(\"UserId stored:\", user.id);\r",
+											"\r",
+											"    pm.test(\"Response has UserId\", function () {\r",
+											"        pm.expect(user.id).to.not.be.undefined;\r",
+											"    });\r",
+											"\r",
+											"    pm.test(\"User Full Name matches test data\", function () {\r",
+											"        pm.expect(user.name).to.eql(pm.environment.get(\"patch_name\"));\r",
+											"    });\r",
+											"\r",
+											"    pm.test(\"User Gender matches test data\", function () {\r",
+											"        pm.expect(user.gender.toLowerCase()).to.eql(pm.iterationData.get(\"patch_gender\").toLowerCase());\r",
+											"    });\r",
+											"    pm.test(\"User Random Email matches test data\", function () {\r",
+											"        pm.expect(user.email).to.eql(pm.environment.get(\"patch_email\"));\r",
+											"    });\r",
+											"\r",
+											"    pm.test(\"User Status matches test data\", function () {\r",
+											"        pm.expect(user.status).to.eql(pm.iterationData.get(\"patch_status\"));\r",
+											"    });\r",
+											"\r",
+											"} else if (pm.response.code === 400) {\r",
+											"    pm.test(\"Request failed with validation error\", function () {\r",
+											"        const errorMessage = jsonData.message || \"No error message returned\";\r",
+											"        console.log(\"Validation error:\", errorMessage);\r",
+											"        pm.expect.fail(\"Request failed with 400: \" + errorMessage);\r",
+											"    });\r",
+											"}\r",
+											"\r",
+											"const schema = {\r",
+											"    type: \"object\",\r",
+											"    required: [\"data\"],\r",
+											"    properties: {\r",
+											"        data: {\r",
+											"            type: \"object\",\r",
+											"            required: [\"id\", \"name\", \"gender\", \"email\", \"status\"],\r",
+											"            properties: {\r",
+											"                id: { type: \"number\" },\r",
+											"                name: { type: \"string\" },\r",
+											"                gender: { type: \"string\" },\r",
+											"                email: { type: \"string\", format: \"email\" },\r",
+											"                status: { type: \"string\" }\r",
+											"            }\r",
+											"        }\r",
+											"    }\r",
+											"};\r",
+											"\r",
+											"pm.test(\"Schema is valid\", function () {\r",
+											"    pm.response.to.have.jsonSchema(schema);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Content-Type includes JSON\", function () {\r",
+											"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"{{patch_name}}\", \r\n    \"gender\": \"{{patch_gender}}\", \r\n    \"email\": \"{{patch_email}}\", \r\n    \"status\": \"{{patch_status}}\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}{{usersEndpoint}}/{{UserId}}",
+									"host": [
+										"{{BASE_URL}}{{usersEndpoint}}"
+									],
+									"path": [
+										"{{UserId}}"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"packages": {},
+								"exec": [
+									"const testType = pm.iterationData.get(\"TestType\");\r",
+									"\r",
+									"if (!testType) {\r",
+									"    console.warn(\"⚠️ TestType is not defined in data file.\");\r",
+									"} else {\r",
+									"    console.log(`🔍 Running iteration with TestType: ${testType}`);\r",
+									"}"
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"packages": {},
+								"exec": [
+									""
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "./posts",
+					"item": [
+						{
+							"name": "[posts-007] create a user post with valid user ID and valid body",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const testType = pm.iterationData.get(\"TestType\");",
+											"",
+											"if (!testType || !testType.startsWith(\"POST-VALID\")) {",
+											"    console.log(`⏭ Skipping validation for Positive Folder | TestType: ${testType}`);",
+											"    return;",
+											"}",
+											"",
+											"console.log(`✅ Validating Positive Test for TestType: ${testType}`);",
+											"let jsonData;",
+											"try {",
+											"    jsonData = pm.response.json();",
+											"} catch (e) {",
+											"    console.error(\"❌ Failed to parse JSON response\", e);",
+											"    jsonData = {};",
+											"}",
+											"",
+											"// ✅ Store only if valid response",
+											"if (pm.response.code === 201 && jsonData.data) {",
+											"    console.log(\"✅ POST-VALID request succeeded.\");",
+											"    pm.environment.set(\"postId\", jsonData.data.id);",
+											"    pm.environment.set(\"posts_title\", jsonData.data.title);",
+											"    pm.environment.set(\"posts_body\", jsonData.data.body);",
+											"    pm.environment.set(\"UserId\", jsonData.data.user_id);",
+											"}",
+											"",
+											"// ✅ Test blocks should always run regardless of storage success",
+											"pm.test(\"Status code is 201\", function () {",
+											"    pm.expect(pm.response.code).to.eql(201);",
+											"});",
+											"",
+											"pm.test(\"Response contains 'data'\", function () {",
+											"    pm.expect(jsonData.data).to.not.be.undefined;",
+											"});",
+											"",
+											"pm.test(\"Content-Type is JSON\", function () {",
+											"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+											"});",
+											"",
+											"pm.test(\"Post ID is a positive number\", function () {",
+											"    pm.expect(jsonData.data.id).to.be.a(\"number\").and.to.be.above(0);",
+											"});",
+											"",
+											"pm.test(\"Post title is not empty\", function () {",
+											"    pm.expect(jsonData.data.title).to.not.be.empty;",
+											"});",
+											"",
+											"pm.test(\"Post body is not too short\", function () {",
+											"    pm.expect(jsonData.data.body.length).to.be.above(10);",
+											"});",
+											"",
+											"pm.test(\"Post belongs to expected user\", function () {",
+											"    pm.expect(jsonData.data.user_id).to.eql(parseInt(pm.environment.get(\"UserId\")));",
+											"});",
+											"",
+											"pm.test(\"Meta is null as expected\", function () {",
+											"    pm.expect(jsonData.meta).to.eql(null);",
+											"});",
+											"",
+											"pm.test(\"Response has date header\", function () {",
+											"    pm.expect(pm.response.headers.has(\"Date\")).to.be.true;",
+											"});",
+											"",
+											"pm.test(\"Response has content-length header\", function () {",
+											"    pm.expect(pm.response.headers.has(\"Content-Length\")).to.be.true;",
+											"});",
+											"",
+											"console.log(\"🧾 Post Created → ID:\", jsonData.data.id, \"| Title:\", jsonData.data.title);",
+											"",
+											"if (testType === \"POST-VALID\") {",
+											"    pm.test(\"POST-VALID → ID should be generated\", function () {",
+											"        pm.expect(jsonData.data.id).to.be.a(\"number\");",
+											"    });",
+											"}",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const testType = pm.iterationData.get(\"TestType\");\r",
+											"\r",
+											"if (!testType) {\r",
+											"    console.warn(\"⚠️ TestType is not defined in data file.\");\r",
+											"} else {\r",
+											"    console.log(`🔍 Running iteration with TestType: ${testType}`);\r",
+											"}"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{BearerToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"title\":\"{{posts_title}}\",\n    \"body\":\"{{posts_body}}\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}{{usersEndpoint}}/{{UserId}}{{postEndpoint}}",
+									"host": [
+										"{{BASE_URL}}{{usersEndpoint}}"
+									],
+									"path": [
+										"{{UserId}}{{postEndpoint}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "[posts-008] all users posts",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"let jsonData;",
+											"try {",
+											"    jsonData = pm.response.json();",
+											"} catch (e) {",
+											"    console.error(\"❌ Failed to parse response as JSON\", e);",
+											"    jsonData = {};",
+											"}",
+											"",
+											"console.log(\"📄 GET ALL POSTS Response:\", jsonData);",
+											"",
+											"// === STATUS AND TIME CHECKS ===",
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"Response time is under 1500ms\", function () {",
+											"    pm.expect(pm.response.responseTime).to.be.below(1500);",
+											"});",
+											"",
+											"// === PAGINATION CHECK ===",
+											"pm.test(\"Pagination info is present\", function () {",
+											"    pm.expect(jsonData.meta).to.have.property(\"pagination\");",
+											"    pm.expect(jsonData.meta.pagination).to.have.all.keys(\"total\", \"pages\", \"page\", \"limit\", \"links\");",
+											"});",
+											"",
+											"pm.test(\"Pagination links are valid\", function () {",
+											"    const links = jsonData.meta.pagination.links;",
+											"    pm.expect(links).to.have.property(\"current\");",
+											"    pm.expect(links.current).to.be.a(\"string\");",
+											"});",
+											"",
+											"// === DATA ARRAY VALIDATION ===",
+											"pm.test(\"Data is an array of posts\", function () {",
+											"    pm.expect(jsonData.data).to.be.an(\"array\");",
+											"    pm.expect(jsonData.data.length).to.be.above(0);",
+											"});",
+											"",
+											"// === SCHEMA VALIDATION (Single Post Object) ===",
+											"const postSchema = {",
+											"    type: \"object\",",
+											"    required: [\"id\", \"user_id\", \"title\", \"body\"],",
+											"    properties: {",
+											"        id: { type: \"number\" },",
+											"        user_id: { type: \"number\" },",
+											"        title: { type: \"string\" },",
+											"        body: { type: \"string\" }",
+											"    }",
+											"};",
+											"",
+											"pm.test(\"Each post matches schema\", function () {",
+											"    jsonData.data.forEach((post, index) => {",
+											"        pm.expect(tv4.validate(post, postSchema), `Schema failed at index ${index}`).to.be.true;",
+											"    });",
+											"});",
+											"",
+											"// === OPTIONAL: Log First Post Title ===",
+											"if (jsonData.data && jsonData.data.length > 0) {",
+											"    console.log(\"📌 First Post Title:\", jsonData.data[0].title);",
+											"}",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"// const testType = pm.iterationData.get(\"TestType\");\r",
+											"\r",
+											"// if (!testType.startsWith(\"GET-\")) {\r",
+											"//     console.log(`⏭ Skipping GET request for TestType: ${testType}`);\r",
+											"//     return pm.execution.skipRequest();\r",
+											"// }\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "",
+										"value": "",
+										"type": "text",
+										"disabled": true
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}{{postEndpoint}}",
+									"host": [
+										"{{BASE_URL}}{{postEndpoint}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "[posts-009] all users post within valid page",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"let jsonData;",
+											"try {",
+											"    jsonData = pm.response.json();",
+											"} catch (e) {",
+											"    console.error(\"❌ Error parsing JSON response\", e);",
+											"    jsonData = {};",
+											"}",
+											"",
+											"console.log(\"📄 GET /posts?page=5 Response:\", jsonData);",
+											"",
+											"// === 1. Status Code Check ===",
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"// === 2. Response Time Check ===",
+											"pm.test(\"Response time is under 1500ms\", function () {",
+											"    pm.expect(pm.response.responseTime).to.be.below(1500);",
+											"});",
+											"",
+											"// === 3. Pagination Check ===",
+											"pm.test(\"Pagination metadata exists\", function () {",
+											"    pm.expect(jsonData.meta).to.have.property(\"pagination\");",
+											"    const pagination = jsonData.meta.pagination;",
+											"    pm.expect(pagination.page).to.eql(5);",
+											"    pm.expect(pagination).to.have.all.keys(\"total\", \"pages\", \"page\", \"limit\", \"links\");",
+											"});",
+											"",
+											"// === 4. Data Array Check ===",
+											"pm.test(\"Data is an array of posts\", function () {",
+											"    pm.expect(jsonData.data).to.be.an(\"array\");",
+											"    pm.expect(jsonData.data.length).to.be.above(0);  // unless it's the last page",
+											"});",
+											"",
+											"// === 5. Schema Validation for Each Post ===",
+											"const postSchema = {",
+											"    type: \"object\",",
+											"    required: [\"id\", \"user_id\", \"title\", \"body\"],",
+											"    properties: {",
+											"        id: { type: \"number\" },",
+											"        user_id: { type: \"number\" },",
+											"        title: { type: \"string\" },",
+											"        body: { type: \"string\" }",
+											"    }",
+											"};",
+											"",
+											"pm.test(\"Each post matches schema\", function () {",
+											"    jsonData.data.forEach((post, index) => {",
+											"        pm.expect(tv4.validate(post, postSchema), `Schema validation failed at index ${index}`).to.be.true;",
+											"    });",
+											"});",
+											"",
+											"// === 6. Header Check ===",
+											"pm.test(\"Content-Type is application/json\", function () {",
+											"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+											"});",
+											"",
+											"console.log(\"✅ Done testing page 5 of posts.\");",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"// const testType = pm.iterationData.get(\"TestType\");\r",
+											"\r",
+											"// if (!testType.startsWith(\"GET-\")) {\r",
+											"//     console.log(`⏭ Skipping GET request for TestType: ${testType}`);\r",
+											"//     return pm.execution.skipRequest();\r",
+											"// }\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "",
+										"value": "",
+										"type": "text",
+										"disabled": true
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}{{postEndpoint}}?page=5",
+									"host": [
+										"{{BASE_URL}}{{postEndpoint}}"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "5"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "[posts-010] posted post by using valid post ID",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"let jsonData;",
+											"try {",
+											"    jsonData = pm.response.json();",
+											"} catch (e) {",
+											"    console.error(\"❌ Failed to parse JSON response\", e);",
+											"    jsonData = {};",
+											"}",
+											"",
+											"console.log(\"📄 GET /posts/:id response:\", jsonData);",
+											"",
+											"// === 1. Status Code ===",
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"// === 2. Validate returned ID matches expected ===",
+											"pm.test(\"Returned postId matches expected\", function () {",
+											"    const expectedId = parseInt(pm.environment.get(\"postId\"));",
+											"    pm.expect(jsonData.data.id).to.eql(expectedId);",
+											"});",
+											"",
+											"// === 3. Title & Body match what was originally posted ===",
+											"pm.test(\"Post title matches expected\", function () {",
+											"    pm.expect(jsonData.data.title).to.eql(pm.environment.get(\"posts_title\"));",
+											"});",
+											"",
+											"pm.test(\"Post body matches expected\", function () {",
+											"    pm.expect(jsonData.data.body).to.eql(pm.environment.get(\"posts_body\"));",
+											"});",
+											"",
+											"// === 4. userId is correct ===",
+											"pm.test(\"User ID matches original user\", function () {",
+											"    pm.expect(jsonData.data.user_id).to.eql(parseInt(pm.environment.get(\"UserId\")));",
+											"});",
+											"",
+											"// === 5. Schema validation ===",
+											"const schema = {",
+											"    type: \"object\",",
+											"    required: [\"data\"],",
+											"    properties: {",
+											"        data: {",
+											"            type: \"object\",",
+											"            required: [\"id\", \"user_id\", \"title\", \"body\"],",
+											"            properties: {",
+											"                id: { type: \"number\" },",
+											"                user_id: { type: \"number\" },",
+											"                title: { type: \"string\" },",
+											"                body: { type: \"string\" }",
+											"            }",
+											"        }",
+											"    }",
+											"};",
+											"",
+											"pm.test(\"Schema is valid\", function () {",
+											"    pm.response.to.have.jsonSchema(schema);",
+											"});",
+											"",
+											"// === 6. Header validation ===",
+											"pm.test(\"Content-Type is application/json\", function () {",
+											"    const contentType = pm.response.headers.get(\"Content-Type\");",
+											"    pm.expect(contentType).to.include(\"application/json\");",
+											"});",
+											"",
+											"console.log(\"✅ Completed GET by ID tests for postId:\", pm.environment.get(\"postId\"));",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"// const testType = pm.iterationData.get(\"TestType\");\r",
+											"\r",
+											"// if (!testType.startsWith(\"GET-\")) {\r",
+											"//     console.log(`⏭ Skipping GET request for TestType: ${testType}`);\r",
+											"//     return pm.execution.skipRequest();\r",
+											"// }\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "",
+										"value": "",
+										"type": "text",
+										"disabled": true
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}{{postEndpoint}}/{{postId}}",
+									"host": [
+										"{{BASE_URL}}{{postEndpoint}}"
+									],
+									"path": [
+										"{{postId}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "[posts-011] posted post by using valid user's ID",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"let jsonData;",
+											"try {",
+											"    jsonData = pm.response.json();",
+											"} catch (e) {",
+											"    console.error(\"❌ Failed to parse JSON response\", e);",
+											"    jsonData = {};",
+											"}",
+											"",
+											"console.log(\"📩 [posts-015] POST response:\", jsonData);",
+											"",
+											"// === 1️⃣ Status code check ===",
+											"pm.test(\"Status code is 200 - Post created\", function () {",
+											"    pm.expect(pm.response.code).to.eql(200);",
+											"});",
+											"",
+											"// === 2️⃣ Validate 'data' is an array and has at least one item ===",
+											"pm.test(\"Response contains 'data' array with at least one post\", function () {",
+											"    pm.expect(jsonData.data).to.be.an(\"array\");",
+											"    pm.expect(jsonData.data.length).to.be.above(0);",
+											"});",
+											"",
+											"// === 3️⃣ Store post + user data from the first item ===",
+											"if (jsonData.data && jsonData.data.length > 0) {",
+											"    const post = jsonData.data[0];",
+											"",
+											"    // Store in environment for chaining",
+											"    pm.environment.set(\"postId\", post.id);",
+											"    pm.environment.set(\"UserId\", post.user_id);",
+											"    pm.environment.set(\"posts_title\", post.title);",
+											"    pm.environment.set(\"posts_body\", post.body);",
+											"",
+											"    console.log(\"✅ Stored postId:\", post.id);",
+											"    console.log(\"✅ Stored UserId:\", post.user_id);",
+											"",
+											"    // === 4️⃣ Field validation ===",
+											"    pm.test(\"Post title matches input\", function () {",
+											"        pm.expect(post.title).to.eql(pm.environment.get(\"posts_title\"));",
+											"    });",
+											"",
+											"    pm.test(\"Post body matches input\", function () {",
+											"        pm.expect(post.body).to.eql(pm.environment.get(\"posts_body\"));",
+											"    });",
+											"",
+											"    pm.test(\"Post user_id matches stored UserId\", function () {",
+											"        pm.expect(post.user_id).to.eql(parseInt(pm.environment.get(\"UserId\")));",
+											"    });",
+											"",
+											"} else {",
+											"    console.error(\"❌ No post data found in response\");",
+											"}",
+											"",
+											"// === 5️⃣ Schema validation ===",
+											"const schema = {",
+											"    type: \"object\",",
+											"    required: [\"data\"],",
+											"    properties: {",
+											"        data: {",
+											"            type: \"array\",",
+											"            items: {",
+											"                type: \"object\",",
+											"                required: [\"id\", \"user_id\", \"title\", \"body\"],",
+											"                properties: {",
+											"                    id: { type: \"number\" },",
+											"                    user_id: { type: \"number\" },",
+											"                    title: { type: \"string\" },",
+											"                    body: { type: \"string\" }",
+											"                }",
+											"            }",
+											"        }",
+											"    }",
+											"};",
+											"",
+											"pm.test(\"Schema is valid\", function () {",
+											"    pm.response.to.have.jsonSchema(schema);",
+											"});",
+											"",
+											"// === 6️⃣ Content-Type header validation ===",
+											"pm.test(\"Content-Type is application/json\", function () {",
+											"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+											"});",
+											"",
+											"console.log(\"✅ [posts-015] First-time post for user test completed.\");",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const testType = pm.iterationData.get(\"TestType\");\r",
+											"\r",
+											"if (!testType.startsWith(\"GET-\")) {\r",
+											"    console.log(`⏭ Skipping GET request for TestType: ${testType}`);\r",
+											"    return pm.execution.skipRequest();\r",
+											"}\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "",
+										"value": "",
+										"type": "text",
+										"disabled": true
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}{{usersEndpoint}}/{{UserId}}{{postEndpoint}}",
+									"host": [
+										"{{BASE_URL}}{{usersEndpoint}}"
+									],
+									"path": [
+										"{{UserId}}{{postEndpoint}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "[posts-012] update user post title and body with valid body by post ID",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"let jsonData;",
+											"try {",
+											"    jsonData = pm.response.json();",
+											"} catch (e) {",
+											"    console.error(\"❌ Failed to parse JSON response\", e);",
+											"    jsonData = {};",
+											"}",
+											"",
+											"// === Status code check ===",
+											"pm.test(\"Status code is 200 - Post updated\", function () {",
+											"    pm.expect(pm.response.code).to.eql(200);",
+											"});",
+											"",
+											"// === Content-Type check ===",
+											"pm.test(\"Content-Type is JSON\", function () {",
+											"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+											"});",
+											"",
+											"// === Data object check ===",
+											"pm.test(\"Response contains 'data'\", function () {",
+											"    pm.expect(jsonData.data).to.be.an(\"object\");",
+											"});",
+											"",
+											"// === ID consistency ===",
+											"pm.test(\"Updated post ID matches original\", function () {",
+											"    const originalPostId = parseInt(pm.environment.get(\"postId\"));",
+											"    console.log(\"🔍 Comparing with original postId:\", originalPostId);",
+											"    pm.expect(jsonData.data.id).to.eql(originalPostId);",
+											"});",
+											"",
+											"// === Field validation against input ===",
+											"pm.test(\"Post title matches PUT data\", function () {",
+											"    pm.expect(jsonData.data.title).to.eql(pm.iterationData.get(\"posts_PutTitle\"));",
+											"});",
+											"",
+											"pm.test(\"Post body matches PUT data\", function () {",
+											"    pm.expect(jsonData.data.body).to.eql(pm.iterationData.get(\"posts_PutBody\"));",
+											"});",
+											"",
+											"// === User ID consistency ===",
+											"pm.test(\"Post user_id is unchanged\", function () {",
+											"    pm.expect(jsonData.data.user_id).to.eql(parseInt(pm.environment.get(\"UserId\")));",
+											"});",
+											"",
+											"// === Schema validation ===",
+											"const schema = {",
+											"    type: \"object\",",
+											"    required: [\"data\"],",
+											"    properties: {",
+											"        data: {",
+											"            type: \"object\",",
+											"            required: [\"id\", \"user_id\", \"title\", \"body\"],",
+											"            properties: {",
+											"                id: { type: \"number\" },",
+											"                user_id: { type: \"number\" },",
+											"                title: { type: \"string\" },",
+											"                body: { type: \"string\" }",
+											"            }",
+											"        }",
+											"    }",
+											"};",
+											"",
+											"pm.test(\"PUT Post response schema is valid\", function () {",
+											"    pm.response.to.have.jsonSchema(schema);",
+											"});",
+											"",
+											"// === Additional headers ===",
+											"pm.test(\"Response includes 'Date' header\", function () {",
+											"    pm.expect(pm.response.headers.has(\"Date\")).to.be.true;",
+											"});",
+											"",
+											"pm.test(\"Response optionally includes 'Content-Length' header\", function () {",
+											"    const hasHeader = pm.response.headers.has(\"Content-Length\");",
+											"    console.log(\"ℹ️ Content-Length present:\", hasHeader);",
+											"});",
+											"",
+											"console.log(\"✅ PUT Post test completed. Post ID:\", jsonData.data.id);",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"title\":\"{{posts_PutTitle}}\",\n    \"body\":\"{{posts_PutBody}}\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}{{postEndpoint}}/{{postId}}",
+									"host": [
+										"{{BASE_URL}}{{postEndpoint}}"
+									],
+									"path": [
+										"{{postId}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "[posts-013] create new feature on user post by post ID",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"let jsonData;",
+											"try {",
+											"    jsonData = pm.response.json();",
+											"} catch (e) {",
+											"    console.error(\"❌ Failed to parse JSON response\", e);",
+											"    jsonData = {};",
+											"}",
+											"",
+											"// === Status code check ===",
+											"pm.test(\"Status code is 200 - Post patched\", function () {",
+											"    pm.expect(pm.response.code).to.eql(200);",
+											"});",
+											"",
+											"// === ID consistency ===",
+											"pm.test(\"Patched post ID matches original\", function () {",
+											"    pm.expect(jsonData.data.id).to.eql(parseInt(pm.environment.get(\"postId\")));",
+											"});",
+											"",
+											"// === Conditional field checks ===",
+											"const patchTitle = pm.iterationData.get(\"posts_PatchTitle\");",
+											"if (patchTitle) {",
+											"    pm.test(\"Post title matches PATCH data\", function () {",
+											"        pm.expect(jsonData.data.title).to.eql(patchTitle);",
+											"    });",
+											"}",
+											"",
+											"const patchBody = pm.iterationData.get(\"posts_PatchBody\");",
+											"if (patchBody) {",
+											"    pm.test(\"Post body matches PATCH data\", function () {",
+											"        pm.expect(jsonData.data.body).to.eql(patchBody);",
+											"    });",
+											"}",
+											"",
+											"// === Schema validation (if applicable) ===",
+											"const schema = {",
+											"    type: \"object\",",
+											"    required: [\"data\"],",
+											"    properties: {",
+											"        data: {",
+											"            type: \"object\",",
+											"            required: [\"id\"],",
+											"            properties: {",
+											"                id: { type: \"number\" },",
+											"                user_id: { type: \"number\" },",
+											"                title: { type: \"string\" },",
+											"                body: { type: \"string\" }",
+											"            }",
+											"        }",
+											"    }",
+											"};",
+											"",
+											"pm.test(\"PATCH Post response schema is valid\", function () {",
+											"    pm.response.to.have.jsonSchema(schema);",
+											"});",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"title\":\"{{posts_PatchTitle}}\",\n    \"body\":\"{{posts_PatchBody}}\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}{{postEndpoint}}/{{postId}}",
+									"host": [
+										"{{BASE_URL}}{{postEndpoint}}"
+									],
+									"path": [
+										"{{postId}}"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"description": "Resouce ./posts API Test"
+				},
+				{
+					"name": "./comments",
+					"item": [
+						{
+							"name": "[comments-014]-POST one comment within valid json",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const testType = pm.iterationData.get(\"TestType\");\r",
+											"\r",
+											"if (!testType) {\r",
+											"    console.warn(\"⚠️ TestType is not defined in data file.\");\r",
+											"} else {\r",
+											"    console.log(`🔍 Running iteration with TestType: ${testType}`);\r",
+											"}"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const testType = pm.iterationData.get(\"TestType\");",
+											"",
+											"if (!testType || !testType.startsWith(\"POST-VALID\")) {",
+											"    console.log(`⏭ Skipping validation for Positive Folder | TestType: ${testType}`);",
+											"    return;",
+											"}",
+											"",
+											"console.log(`✅ Validating Positive Test for TestType: ${testType}`);",
+											"",
+											"let jsonData;",
+											"try {",
+											"    jsonData = pm.response.json();",
+											"} catch (e) {",
+											"    console.error(\"❌ Failed to parse JSON response\", e);",
+											"    jsonData = {};",
+											"}",
+											"",
+											"// ✅ Store to environment if data exists",
+											"if (pm.response.code === 201 && jsonData.data) {",
+											"    console.log(\"✅ COMMENT-POST succeeded with wrapped data.\");",
+											"    pm.environment.set(\"commentId\", jsonData.data.id);",
+											"    pm.environment.set(\"comment_postId\", jsonData.data.post_id);",
+											"    pm.environment.set(\"comment_name\", jsonData.data.name);",
+											"    pm.environment.set(\"comment_email\", jsonData.data.email);",
+											"    pm.environment.set(\"comment_body\", jsonData.data.body);",
+											"",
+											"    console.log(\"📌 commentId:\", jsonData.data.id);",
+											"    console.log(\"📌 post_id:\", jsonData.data.post_id);",
+											"}",
+											"",
+											"// ✅ Tests",
+											"pm.test(\"Status code is 201\", function () {",
+											"    pm.expect(pm.response.code).to.eql(201);",
+											"});",
+											"",
+											"pm.test(\"Comment ID is a positive number\", function () {",
+											"    pm.expect(jsonData.data.id).to.be.a(\"number\").and.to.be.above(0);",
+											"});",
+											"",
+											"pm.test(\"Comment body is not empty\", function () {",
+											"    pm.expect(jsonData.data.body).to.not.be.empty;",
+											"});",
+											"",
+											"pm.test(\"Comment email is valid format\", function () {",
+											"    pm.expect(jsonData.data.email).to.match(/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/);",
+											"});",
+											"",
+											"pm.test(\"Content-Type is JSON\", function () {",
+											"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+											"});",
+											"",
+											"pm.test(\"Date header is present\", function () {",
+											"    pm.expect(pm.response.headers.has(\"Date\")).to.be.true;",
+											"});",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{BearerToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "",
+										"value": "",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n            \"post_id\": {{postId}},\n            \"name\":  \"{{post_Name}}\",\n            \"email\": \"{{post_Email}}\",\n            \"body\": \"{{posts_body}}\"\n        }",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}{{commentsEndPoint}}",
+									"host": [
+										"{{BASE_URL}}{{commentsEndPoint}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "[comments-015]-GET all  comments",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"let jsonData;",
+											"try {",
+											"    jsonData = pm.response.json();",
+											"} catch (e) {",
+											"    console.error(\"❌ Failed to parse JSON response\", e);",
+											"    jsonData = {};",
+											"}",
+											"",
+											"console.log(\"📥 GET /comments Response:\", jsonData);",
+											"",
+											"// === 1. Status Code ===",
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.expect(pm.response.code).to.eql(200);",
+											"});",
+											"",
+											"// === 2. Response has a 'data' array ===",
+											"pm.test(\"Response contains a 'data' array\", function () {",
+											"    pm.expect(jsonData.data).to.be.an(\"array\");",
+											"    pm.expect(jsonData.data.length).to.be.greaterThan(0);",
+											"});",
+											"",
+											"// === 3. Validate each comment structure ===",
+											"jsonData.data.forEach((comment, index) => {",
+											"    pm.test(`Comment #${index + 1} - has id`, function () {",
+											"        pm.expect(comment.id).to.be.a(\"number\");",
+											"    });",
+											"",
+											"    pm.test(`Comment #${index + 1} - has valid email`, function () {",
+											"        pm.expect(comment.email).to.match(/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/);",
+											"    });",
+											"",
+											"    pm.test(`Comment #${index + 1} - body is not empty`, function () {",
+											"        pm.expect(comment.body).to.be.a(\"string\").and.not.empty;",
+											"    });",
+											"",
+											"    pm.test(`Comment #${index + 1} - has post_id`, function () {",
+											"        pm.expect(comment.post_id).to.be.a(\"number\");",
+											"    });",
+											"});",
+											"",
+											"// === 4. Header Checks ===",
+											"pm.test(\"Content-Type is application/json\", function () {",
+											"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+											"});",
+											"",
+											"pm.test(\"Date header is present\", function () {",
+											"    pm.expect(pm.response.headers.has(\"Date\")).to.be.true;",
+											"});",
+											"",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"// const testType = pm.iterationData.get(\"TestType\");\r",
+											"\r",
+											"// if (!testType.startsWith(\"GET-\")) {\r",
+											"//     console.log(`⏭ Skipping GET request for TestType: ${testType}`);\r",
+											"//     return pm.execution.skipRequest();\r",
+											"// }\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{BASE_URL}}{{commentsEndPoint}}",
+									"host": [
+										"{{BASE_URL}}{{commentsEndPoint}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "[comments-016]-GET all users comments with body contains \"jduy\"",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"let jsonData;",
+											"try {",
+											"    jsonData = pm.response.json();",
+											"} catch (e) {",
+											"    console.error(\"❌ Failed to parse JSON response\", e);",
+											"    jsonData = {};",
+											"}",
+											"",
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.expect(pm.response.code).to.eql(200);",
+											"});",
+											"",
+											"pm.test(\"At least one comment body contains 'jduy'\", function () {",
+											"    const found = jsonData.data.some(comment => comment.body.includes(\"jduy\"));",
+											"    pm.expect(found).to.be.true;",
+											"});",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"// const testType = pm.iterationData.get(\"TestType\");\r",
+											"\r",
+											"// if (!testType.startsWith(\"GET-\")) {\r",
+											"//     console.log(`⏭ Skipping GET request for TestType: ${testType}`);\r",
+											"//     return pm.execution.skipRequest();\r",
+											"// }\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}{{commentsEndPoint}}",
+									"host": [
+										"{{BASE_URL}}{{commentsEndPoint}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "[comments-017]-GET all users comments within valid id",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"let jsonData;",
+											"try {",
+											"    jsonData = pm.response.json();",
+											"} catch (e) {",
+											"    console.error(\"❌ Failed to parse JSON response\", e);",
+											"    jsonData = {};",
+											"}",
+											"",
+											"console.log(\"📥 GET /comments/:id response:\", jsonData);",
+											"",
+											"// ✅ 1️⃣ Status code",
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.expect(pm.response.code).to.eql(200);",
+											"});",
+											"",
+											"// ✅ 2️⃣ Response contains data object",
+											"pm.test(\"Response contains 'data' object\", function () {",
+											"    pm.expect(jsonData.data).to.be.an(\"object\");",
+											"});",
+											"",
+											"// ✅ 3️⃣ ID matches stored ID",
+											"pm.test(\"Comment ID matches stored commentId\", function () {",
+											"    pm.expect(jsonData.data.id).to.eql(parseInt(pm.environment.get(\"commentId\")));",
+											"});",
+											"",
+											"// ✅ 4️⃣ post_id matches stored postId",
+											"pm.test(\"Comment post_id matches stored postId\", function () {",
+											"    pm.expect(jsonData.data.post_id).to.eql(parseInt(pm.environment.get(\"comment_postId\")));",
+											"});",
+											"",
+											"// ✅ 5️⃣ name matches stored name",
+											"pm.test(\"Comment name matches stored name\", function () {",
+											"    pm.expect(jsonData.data.name).to.eql(pm.environment.get(\"comment_name\"));",
+											"});",
+											"",
+											"// ✅ 6️⃣ email matches stored email",
+											"pm.test(\"Comment email matches stored email\", function () {",
+											"    pm.expect(jsonData.data.email).to.eql(pm.environment.get(\"comment_email\"));",
+											"});",
+											"",
+											"// ✅ 7️⃣ body matches stored body",
+											"pm.test(\"Comment body matches stored body\", function () {",
+											"    pm.expect(jsonData.data.body).to.eql(pm.environment.get(\"comment_body\"));",
+											"});",
+											"",
+											"// ✅ 8️⃣ Content-Type header is JSON",
+											"pm.test(\"Content-Type is application/json\", function () {",
+											"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+											"});",
+											"",
+											"// ✅ 9️⃣ Date header present",
+											"pm.test(\"Date header is present\", function () {",
+											"    pm.expect(pm.response.headers.has(\"Date\")).to.be.true;",
+											"});",
+											"",
+											"// ✅ 🔍 Optional schema validation",
+											"const schema = {",
+											"    type: \"object\",",
+											"    required: [\"meta\", \"data\"],",
+											"    properties: {",
+											"        meta: { type: [\"object\", \"null\"] },",
+											"        data: {",
+											"            type: \"object\",",
+											"            required: [\"id\", \"post_id\", \"name\", \"email\", \"body\"],",
+											"            properties: {",
+											"                id: { type: \"number\" },",
+											"                post_id: { type: \"number\" },",
+											"                name: { type: \"string\" },",
+											"                email: { type: \"string\", format: \"email\" },",
+											"                body: { type: \"string\" }",
+											"            }",
+											"        }",
+											"    }",
+											"};",
+											"",
+											"pm.test(\"Schema is valid\", function () {",
+											"    pm.expect(tv4.validate(jsonData, schema)).to.be.true;",
+											"});",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"// const testType = pm.iterationData.get(\"TestType\");\r",
+											"\r",
+											"// if (!testType.startsWith(\"GET-\")) {\r",
+											"//     console.log(`⏭ Skipping GET request for TestType: ${testType}`);\r",
+											"//     return pm.execution.skipRequest();\r",
+											"// }\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}{{commentsEndPoint}}/{{commentId}}",
+									"host": [
+										"{{BASE_URL}}{{commentsEndPoint}}"
+									],
+									"path": [
+										"{{commentId}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "[comments-018]-GET all users comments within valid page",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"let jsonData;",
+											"try {",
+											"    jsonData = pm.response.json();",
+											"} catch (e) {",
+											"    console.error(\"❌ Failed to parse JSON response\", e);",
+											"    jsonData = {};",
+											"}",
+											"",
+											"console.log(\"📥 GET /comments?page=20 response:\", jsonData);",
+											"",
+											"// ✅ 1️⃣ Status code",
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.expect(pm.response.code).to.eql(200);",
+											"});",
+											"",
+											"// ✅ 2️⃣ Response has pagination meta",
+											"pm.test(\"Response has pagination metadata\", function () {",
+											"    pm.expect(jsonData.meta).to.be.an(\"object\");",
+											"    pm.expect(jsonData.meta.pagination).to.be.an(\"object\");",
+											"});",
+											"",
+											"// ✅ 3️⃣ Pagination values match page 20",
+											"pm.test(\"Pagination page is 20\", function () {",
+											"    pm.expect(jsonData.meta.pagination.page).to.eql(20);",
+											"});",
+											"",
+											"// ✅ 4️⃣ Data array is returned",
+											"pm.test(\"Response contains data array\", function () {",
+											"    pm.expect(jsonData.data).to.be.an(\"array\");",
+											"    pm.expect(jsonData.data.length).to.be.above(0);",
+											"});",
+											"",
+											"// ✅ 5️⃣ Each comment in data has required fields",
+											"jsonData.data.forEach((comment, index) => {",
+											"    pm.test(`Comment #${index + 1} has id`, function () {",
+											"        pm.expect(comment).to.have.property(\"id\").that.is.a(\"number\");",
+											"    });",
+											"    pm.test(`Comment #${index + 1} has post_id`, function () {",
+											"        pm.expect(comment).to.have.property(\"post_id\").that.is.a(\"number\");",
+											"    });",
+											"    pm.test(`Comment #${index + 1} has name`, function () {",
+											"        pm.expect(comment).to.have.property(\"name\").that.is.a(\"string\");",
+											"    });",
+											"    pm.test(`Comment #${index + 1} has email`, function () {",
+											"        pm.expect(comment).to.have.property(\"email\").that.is.a(\"string\");",
+											"    });",
+											"    pm.test(`Comment #${index + 1} has body`, function () {",
+											"        pm.expect(comment).to.have.property(\"body\").that.is.a(\"string\");",
+											"    });",
+											"});",
+											"",
+											"// ✅ 6️⃣ Content-Type header is JSON",
+											"pm.test(\"Content-Type is application/json\", function () {",
+											"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+											"});",
+											"",
+											"// ✅ 7️⃣ Date header is present",
+											"pm.test(\"Date header is present\", function () {",
+											"    pm.expect(pm.response.headers.has(\"Date\")).to.be.true;",
+											"});",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"// const testType = pm.iterationData.get(\"TestType\");\r",
+											"\r",
+											"// if (!testType.startsWith(\"GET-\")) {\r",
+											"//     console.log(`⏭ Skipping GET request for TestType: ${testType}`);\r",
+											"//     return pm.execution.skipRequest();\r",
+											"// }\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}{{commentsEndPoint}}?page=20",
+									"host": [
+										"{{BASE_URL}}{{commentsEndPoint}}"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "20"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "[comments-018]-CommentsGetById",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"let jsonData;\r",
+											"try {\r",
+											"    jsonData = pm.response.json();\r",
+											"} catch (e) {\r",
+											"    console.error(\"❌ Failed to parse JSON response\", e);\r",
+											"    jsonData = {};\r",
+											"}\r",
+											"\r",
+											"// 🔍 Log response\r",
+											"console.log(\"📥 GET /comments/:id response:\", jsonData);\r",
+											"\r",
+											"// === 1. Status Code\r",
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.expect(pm.response.code).to.eql(200);\r",
+											"});\r",
+											"\r",
+											"// === Extract data object\r",
+											"const comment = jsonData.data;\r",
+											"\r",
+											"// === 2. ID matches\r",
+											"pm.test(\"Comment ID matches stored ID\", function () {\r",
+											"    pm.expect(comment.id).to.eql(parseInt(pm.environment.get(\"commentId\")));\r",
+											"});\r",
+											"\r",
+											"// === 3. post_id matches\r",
+											"pm.test(\"Comment post_id matches stored post ID\", function () {\r",
+											"    pm.expect(comment.post_id).to.eql(parseInt(pm.environment.get(\"comment_postId\")));\r",
+											"});\r",
+											"\r",
+											"// === 4. Name, Email, Body match stored values\r",
+											"pm.test(\"Comment name matches stored name\", function () {\r",
+											"    pm.expect(comment.name).to.eql(pm.environment.get(\"comment_name\"));\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Comment email matches stored email\", function () {\r",
+											"    pm.expect(comment.email).to.eql(pm.environment.get(\"comment_email\"));\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Comment body matches stored body\", function () {\r",
+											"    pm.expect(comment.body).to.eql(pm.environment.get(\"comment_body\"));\r",
+											"});\r",
+											"\r",
+											"// === 5. Header & Format Checks\r",
+											"pm.test(\"Content-Type is JSON\", function () {\r",
+											"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Date header is present\", function () {\r",
+											"    pm.expect(pm.response.headers.has(\"Date\")).to.be.true;\r",
+											"});\r",
+											"\r",
+											"// === 6. Schema (optional)\r",
+											"const schema = {\r",
+											"    type: \"object\",\r",
+											"    required: [\"meta\", \"data\"],\r",
+											"    properties: {\r",
+											"        meta: {\r",
+											"            type: [\"object\", \"null\"]\r",
+											"        },\r",
+											"        data: {\r",
+											"            type: \"object\",\r",
+											"            required: [\"id\", \"post_id\", \"name\", \"email\", \"body\"],\r",
+											"            properties: {\r",
+											"                id: { type: \"number\" },\r",
+											"                post_id: { type: \"number\" },\r",
+											"                name: { type: \"string\" },\r",
+											"                email: { type: \"string\", format: \"email\" },\r",
+											"                body: { type: \"string\" }\r",
+											"            }\r",
+											"        }\r",
+											"    }\r",
+											"};\r",
+											"\r",
+											"pm.test(\"Schema is valid\", function () {\r",
+											"    pm.expect(tv4.validate(jsonData, schema)).to.be.true;\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"// const testType = pm.iterationData.get(\"TestType\");\r",
+											"\r",
+											"// if (!testType.startsWith(\"GET-\")) {\r",
+											"//     console.log(`⏭ Skipping GET request for TestType: ${testType}`);\r",
+											"//     return pm.execution.skipRequest();\r",
+											"// }\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{BASE_URL}}{{commentsEndPoint}}/{{commentId}}",
+									"host": [
+										"{{BASE_URL}}{{commentsEndPoint}}"
+									],
+									"path": [
+										"{{commentId}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "[comments-019]-PUT one comment within valid json Copy",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"let jsonData;",
+											"try {",
+											"    jsonData = pm.response.json();",
+											"} catch (e) {",
+											"    console.error(\"❌ Failed to parse JSON response\", e);",
+											"    jsonData = {};",
+											"}",
+											"",
+											"console.log(\"📥 PUT /comments/:id response:\", jsonData);",
+											"",
+											"// ✅ 1️⃣ Status code check",
+											"pm.test(\"Status code is 200 - Comment updated\", function () {",
+											"    pm.expect(pm.response.code).to.eql(200);",
+											"});",
+											"",
+											"// ✅ 2️⃣ Response contains data object",
+											"pm.test(\"Response contains 'data' object\", function () {",
+											"    pm.expect(jsonData.data).to.be.an(\"object\");",
+											"});",
+											"",
+											"// ✅ 3️⃣ ID matches the updated comment ID",
+											"pm.test(\"Comment ID matches stored ID\", function () {",
+											"    pm.expect(jsonData.data.id).to.eql(parseInt(pm.environment.get(\"commentId\")));",
+											"});",
+											"",
+											"// ✅ 4️⃣ Name matches PUT input",
+											"pm.test(\"Comment name matches PUT data\", function () {",
+											"    pm.expect(jsonData.data.name).to.eql(pm.iterationData.get(\"comment_PutName\"));",
+											"});",
+											"",
+											"// ✅ 5️⃣ Email matches PUT input",
+											"pm.test(\"Comment email matches PUT data\", function () {",
+											"    pm.expect(jsonData.data.email).to.eql(pm.iterationData.get(\"comment_PutEmail\"));",
+											"});",
+											"",
+											"// ✅ 6️⃣ Body matches PUT input",
+											"pm.test(\"Comment body matches PUT data\", function () {",
+											"    pm.expect(jsonData.data.body).to.eql(pm.iterationData.get(\"comment_PutBody\"));",
+											"});",
+											"",
+											"// ✅ 7️⃣ Content-Type header is JSON",
+											"pm.test(\"Content-Type is application/json\", function () {",
+											"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+											"});",
+											"",
+											"// ✅ 8️⃣ Date header is present",
+											"pm.test(\"Date header is present\", function () {",
+											"    pm.expect(pm.response.headers.has(\"Date\")).to.be.true;",
+											"});",
+											"",
+											"// ✅ 9️⃣ (Optional) Schema validation",
+											"const schema = {",
+											"    type: \"object\",",
+											"    required: [\"meta\", \"data\"],",
+											"    properties: {",
+											"        meta: { type: [\"object\", \"null\"] },",
+											"        data: {",
+											"            type: \"object\",",
+											"            required: [\"id\", \"post_id\", \"name\", \"email\", \"body\"],",
+											"            properties: {",
+											"                id: { type: \"number\" },",
+											"                post_id: { type: \"number\" },",
+											"                name: { type: \"string\" },",
+											"                email: { type: \"string\", format: \"email\" },",
+											"                body: { type: \"string\" }",
+											"            }",
+											"        }",
+											"    }",
+											"};",
+											"",
+											"pm.test(\"Response schema is valid\", function () {",
+											"    pm.expect(tv4.validate(jsonData, schema)).to.be.true;",
+											"});",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"// if (!testType.startsWith(\"PUT-\")) {\r",
+											"//     return pm.execution.skipRequest();\r",
+											"// }"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n            \n            \"name\": \"{{comment_PutName}}\",\n            \"email\": \"{{comment_PutEmail}}\",\n            \"body\": \"{{comment_PutBody}}\"\n        }",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}{{commentsEndPoint}}/{{commentId}}",
+									"host": [
+										"{{BASE_URL}}{{commentsEndPoint}}"
+									],
+									"path": [
+										"{{commentId}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "[comments-019]-PATCH one comment within valid json Copy",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"let jsonData;",
+											"try {",
+											"    jsonData = pm.response.json();",
+											"} catch (e) {",
+											"    console.error(\"❌ Failed to parse JSON response\", e);",
+											"    jsonData = {};",
+											"}",
+											"",
+											"console.log(\"📥 PATCH /comments/:id response:\", jsonData);",
+											"",
+											"// ✅ 1️⃣ Status code check",
+											"pm.test(\"Status code is 200 - Comment patched\", function () {",
+											"    pm.expect(pm.response.code).to.eql(200);",
+											"});",
+											"",
+											"// ✅ 2️⃣ Response contains data object",
+											"pm.test(\"Response contains 'data' object\", function () {",
+											"    pm.expect(jsonData.data).to.be.an(\"object\");",
+											"});",
+											"",
+											"// ✅ 3️⃣ ID matches stored ID",
+											"pm.test(\"Patched comment ID matches stored ID\", function () {",
+											"    pm.expect(jsonData.data.id).to.eql(parseInt(pm.environment.get(\"commentId\")));",
+											"});",
+											"",
+											"// ✅ 4️⃣ post_id matches stored post ID",
+											"pm.test(\"Patched comment post_id matches stored post ID\", function () {",
+											"    pm.expect(jsonData.data.post_id).to.eql(parseInt(pm.environment.get(\"postId\")));",
+											"});",
+											"",
+											"// ✅ 5️⃣ name matches PATCH input",
+											"pm.test(\"Patched comment name matches PATCH data\", function () {",
+											"    pm.expect(jsonData.data.name).to.eql(pm.iterationData.get(\"comment_PatchName\"));",
+											"});",
+											"",
+											"// ✅ 6️⃣ email matches PATCH input",
+											"pm.test(\"Patched comment email matches PATCH data\", function () {",
+											"    pm.expect(jsonData.data.email).to.eql(pm.iterationData.get(\"comment_PatchEmail\"));",
+											"});",
+											"",
+											"// ✅ 7️⃣ body matches PATCH input",
+											"pm.test(\"Patched comment body matches PATCH data\", function () {",
+											"    pm.expect(jsonData.data.body).to.eql(pm.iterationData.get(\"comment_PatchBody\"));",
+											"});",
+											"",
+											"// ✅ 8️⃣ Content-Type header is JSON",
+											"pm.test(\"Content-Type is application/json\", function () {",
+											"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+											"});",
+											"",
+											"// ✅ 9️⃣ Date header is present",
+											"pm.test(\"Date header is present\", function () {",
+											"    pm.expect(pm.response.headers.has(\"Date\")).to.be.true;",
+											"});",
+											"",
+											"// ✅ 🔍 Optional schema validation",
+											"const schema = {",
+											"    type: \"object\",",
+											"    required: [\"meta\", \"data\"],",
+											"    properties: {",
+											"        meta: { type: [\"object\", \"null\"] },",
+											"        data: {",
+											"            type: \"object\",",
+											"            required: [\"id\", \"post_id\", \"name\", \"email\", \"body\"],",
+											"            properties: {",
+											"                id: { type: \"number\" },",
+											"                post_id: { type: \"number\" },",
+											"                name: { type: \"string\" },",
+											"                email: { type: \"string\", format: \"email\" },",
+											"                body: { type: \"string\" }",
+											"            }",
+											"        }",
+											"    }",
+											"};",
+											"",
+											"pm.test(\"Response schema is valid\", function () {",
+											"    pm.expect(tv4.validate(jsonData, schema)).to.be.true;",
+											"});",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"// if (!testType.startsWith(\"PATCH-\")) {\r",
+											"//     return pm.execution.skipRequest();\r",
+											"// }"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n            \"id\": {{commentId}},\n            \"post_id\": {{postId}},\n            \"name\": \"{{comment_PatchName}}\",\n            \"email\": \"{{comment_PatchEmail}}\",\n            \"body\": \"{{comment_PatchBody}}\"\n        }",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}{{commentsEndPoint}}/{{commentId}}",
+									"host": [
+										"{{BASE_URL}}{{commentsEndPoint}}"
+									],
+									"path": [
+										"{{commentId}}"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "deleteMethod",
+					"item": [
+						{
+							"name": "[comments-020]-DEL one comment with valid id",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 204\", function () {",
+											"    pm.response.to.have.status(204);",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}{{commentsEndPoint}}/{{commentId}}",
+									"host": [
+										"{{BASE_URL}}{{commentsEndPoint}}"
+									],
+									"path": [
+										"{{commentId}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "[posts-021] user posts by valid post ID",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 204\", function () {",
+											"    pm.response.to.have.status(204);",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{BASE_URL}}{{postEndpoint}}/{{postId}}",
+									"host": [
+										"{{BASE_URL}}{{postEndpoint}}"
+									],
+									"path": [
+										"{{postId}}"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "user posts by valid post ID",
+									"originalRequest": {
+										"method": "DELETE",
+										"header": [],
+										"url": {
+											"raw": "{{BASE_URL}}{{postsEndpoint}}/1601",
+											"host": [
+												"{{BASE_URL}}{{postsEndpoint}}"
+											],
+											"path": [
+												"1601"
+											]
+										}
+									},
+									"_postman_previewlanguage": "Text",
+									"header": [],
+									"cookie": [],
+									"body": ""
+								}
+							]
+						},
+						{
+							"name": "[users-022]- Delete available user",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"✅ DELETE request executed\", () => {\r",
+											"    const UserId = pm.environment.get(\"UserId\");\r",
+											"    pm.expect(UserId).to.not.be.undefined;\r",
+											"});\r",
+											"\r",
+											"const expected = Number(pm.iterationData.get(\"delete_statuscode\"));\r",
+											"const actual = pm.response.code;\r",
+											"\r",
+											"pm.test(\"Status code is expected\", function () {\r",
+											"    // Allow both 200 and 204 if 204 is expected\r",
+											"    if (expected === 204) {\r",
+											"        pm.expect(actual).to.be.oneOf([200, 204]);\r",
+											"    } else {\r",
+											"        pm.expect(actual).to.eql(expected);\r",
+											"    }\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response time is under 2000ms\", function () {\r",
+											"    pm.expect(pm.response.responseTime).to.be.below(2000);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"📭 Response body is empty or contains confirmation\", () => {\r",
+											"    const body = pm.response.text();\r",
+											"    pm.expect(body === \"\" || body.toLowerCase().includes(\"deleted\")).to.be.true;\r",
+											"});\r",
+											"\r",
+											"if (pm.response.code >= 400) {\r",
+											"    console.warn(\"Delete may have failed:\", pm.response.text());\r",
+											"}\r",
+											"\r",
+											"// Clean up after delete\r",
+											"pm.environment.unset(\"UserId\");\r",
+											"pm.environment.unset(\"userName\");\r",
+											"pm.environment.unset(\"userEmail\");\r",
+											"console.log(`🗑️ UserId cleared after iteration ${pm.info.iteration}`);\r",
+											"console.log(\"✅ DELETE request passed all validations\");\r",
+											"\r",
+											"pm.execution.setNextRequest(null);"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const testType = pm.iterationData.get(\"TestType\");\r",
+											"if (testType !== \"POST-VALID\") {\r",
+											"    console.log(`⏭️ Skipping ${pm.info.requestName} | TestType: ${testType}`);\r",
+											"    pm.execution.skipRequest();\r",
+											"    return;\r",
+											"}"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{BASE_URL}}{{usersEndpoint}}/{{UserId}}",
+									"host": [
+										"{{BASE_URL}}{{usersEndpoint}}"
+									],
+									"path": [
+										"{{UserId}}"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Negative Folder",
+			"item": [
+				{
+					"name": "./users",
+					"item": [
+						{
+							"name": "[users-023] Create new user with invalid JSON",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"// const testType = pm.iterationData.get(\"TestType\");\r",
+											"\r",
+											"// if (!testType) {\r",
+											"//     console.warn(\"⚠️ TestType is not defined in data file.\");\r",
+											"// } else {\r",
+											"//     console.log(`🔍 Running iteration with TestType: ${testType}`);\r",
+											"// }\r",
+											"const testType = pm.iterationData.get(\"TestType\");\r",
+											"const expectedStatus = pm.iterationData.get(\"ExpectedStatus\");\r",
+											"\r",
+											"if (!testType) {\r",
+											"    console.warn(\"⚠️ TestType is not defined in data file.\");\r",
+											"} else {\r",
+											"    console.log(`🔍 Running iteration with TestType: ${testType}`);\r",
+											"}\r",
+											"\r",
+											"console.log(`👉 Raw ExpectedStatus from CSV:`, expectedStatus);\r",
+											"\r",
+											"if (expectedStatus) {\r",
+											"    pm.environment.set(\"ExpectedStatus\", expectedStatus);\r",
+											"    console.log(`✅ ExpectedStatus set for this iteration: ${expectedStatus}`);\r",
+											"} else {\r",
+											"    pm.environment.set(\"ExpectedStatus\", \"422\");  // Example fallback\r",
+											"    console.warn(\"⚠️ ExpectedStatus is not defined in data file — defaulting to 422\");\r",
+											"}\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const testType = pm.iterationData.get(\"TestType\");\r",
+											"const expectedStatus = pm.environment.get(\"ExpectedStatus\");\r",
+											"\r",
+											"console.log(`🔍 Running negative test validation | TestType: ${testType}`);\r",
+											"\r",
+											"pm.execution.setNextRequest(null);  // Stop next request for this negative case\r",
+											"\r",
+											"// Assert status code\r",
+											"pm.test(`Status code is ${expectedStatus}`, function () {\r",
+											"    pm.expect(pm.response.code).to.eql(Number(expectedStatus));\r",
+											"});\r",
+											"\r",
+											"// If 422, validate error response structure\r",
+											"if (Number(expectedStatus) === 422) {\r",
+											"    let jsonData = {};\r",
+											"    try {\r",
+											"        jsonData = pm.response.json();\r",
+											"    } catch (e) {\r",
+											"        console.error(\"❌ Failed to parse JSON response\", e);\r",
+											"    }\r",
+											"\r",
+											"    pm.test(\"Response meta is null\", function () {\r",
+											"        pm.expect(jsonData.meta).to.eql(null);\r",
+											"    });\r",
+											"\r",
+											"    pm.test(\"Response data is array of errors\", function () {\r",
+											"        pm.expect(jsonData.data).to.be.an(\"array\");\r",
+											"        pm.expect(jsonData.data.length).to.be.above(0);\r",
+											"        jsonData.data.forEach(function (error) {\r",
+											"            pm.expect(error).to.have.property(\"field\");\r",
+											"            pm.expect(error).to.have.property(\"message\");\r",
+											"        });\r",
+											"    });\r",
+											"\r",
+											"    console.log(\"💡 Validation errors:\", jsonData.data);\r",
+											"}\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"{{$randomFullName}}\",\r\n    \"gender\": \"male\",\r\n    \"status\": \"active\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}{{usersEndpoint}}",
+									"host": [
+										"{{BASE_URL}}{{usersEndpoint}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "[users-024] Create new user with existing JSON data",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"// const testType = pm.iterationData.get(\"TestType\");\r",
+											"\r",
+											"// if (!testType || !testType.startsWith(\"POST-EXISTING\")) {\r",
+											"//     console.log(`⏭ Skipping validation for Negative Folder | TestType: ${testType}`);\r",
+											"//     return;\r",
+											"// }\r",
+											"\r",
+											"// console.log(`✅ Validating Negative Test for TestType: ${testType}`);\r",
+											"// postman.setNextRequest(null);\r",
+											"const testType = pm.iterationData.get(\"TestType\");\r",
+											"const expectedStatus = pm.environment.get(\"ExpectedStatus\");\r",
+											"\r",
+											"console.log(`🔍 Running negative test validation | TestType: ${testType}`);\r",
+											"\r",
+											"pm.execution.setNextRequest(null);  // Stop next request for this negative case\r",
+											"\r",
+											"// Assert status code\r",
+											"pm.test(`Status code is ${expectedStatus}`, function () {\r",
+											"    pm.expect(pm.response.code).to.eql(Number(expectedStatus));\r",
+											"});\r",
+											"\r",
+											"// If 422, validate error response structure\r",
+											"if (Number(expectedStatus) === 422) {\r",
+											"    let jsonData = {};\r",
+											"    try {\r",
+											"        jsonData = pm.response.json();\r",
+											"    } catch (e) {\r",
+											"        console.error(\"❌ Failed to parse JSON response\", e);\r",
+											"    }\r",
+											"\r",
+											"    pm.test(\"Response meta is null\", function () {\r",
+											"        pm.expect(jsonData.meta).to.eql(null);\r",
+											"    });\r",
+											"\r",
+											"    pm.test(\"Response data is array of errors\", function () {\r",
+											"        pm.expect(jsonData.data).to.be.an(\"array\");\r",
+											"        pm.expect(jsonData.data.length).to.be.above(0);\r",
+											"        jsonData.data.forEach(function (error) {\r",
+											"            pm.expect(error).to.have.property(\"field\");\r",
+											"            pm.expect(error).to.have.property(\"message\");\r",
+											"        });\r",
+											"    });\r",
+											"\r",
+											"    console.log(\"💡 Validation errors:\", jsonData.data);\r",
+											"}\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"// const testType = pm.iterationData.get(\"TestType\");\r",
+											"\r",
+											"// if (!testType) {\r",
+											"//     console.warn(\"⚠️ TestType is not defined in data file.\");\r",
+											"// } else {\r",
+											"//     console.log(`🔍 Running iteration with TestType: ${testType}`);\r",
+											"// }\r",
+											"const testType = pm.iterationData.get(\"TestType\");\r",
+											"const expectedStatus = pm.iterationData.get(\"ExpectedStatus\");\r",
+											"\r",
+											"if (!testType) {\r",
+											"    console.warn(\"⚠️ TestType is not defined in data file.\");\r",
+											"} else {\r",
+											"    console.log(`🔍 Running iteration with TestType: ${testType}`);\r",
+											"}\r",
+											"\r",
+											"console.log(`👉 Raw ExpectedStatus from CSV:`, expectedStatus);\r",
+											"\r",
+											"if (expectedStatus) {\r",
+											"    pm.environment.set(\"ExpectedStatus\", expectedStatus);\r",
+											"    console.log(`✅ ExpectedStatus set for this iteration: ${expectedStatus}`);\r",
+											"} else {\r",
+											"    pm.environment.set(\"ExpectedStatus\", \"422\");  // Fallback to 422 for negative test\r",
+											"    console.warn(\"⚠️ ExpectedStatus is not defined in data file — defaulting to 422\");\r",
+											"}\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"Elbert Gulgowski\",\r\n    \"email\": \"Webster_Schaefer77@example.net\",\r\n    \"gender\": \"male\",\r\n    \"status\": \"active\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}{{usersEndpoint}}",
+									"host": [
+										"{{BASE_URL}}{{usersEndpoint}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "[users-025] Create new user with missing Name",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"// const testType = pm.iterationData.get(\"TestType\");\r",
+											"\r",
+											"// if (!testType || !testType.startsWith(\"POST-MISSING-NAME\")) {\r",
+											"//     console.log(`⏭ Skipping validation for Negative Folder | TestType: ${testType}`);\r",
+											"//     return;\r",
+											"// }\r",
+											"\r",
+											"// console.log(`✅ Validating Negative Test for TestType: ${testType}`);\r",
+											"// postman.setNextRequest(null);\r",
+											"const testType = pm.iterationData.get(\"TestType\");\r",
+											"const expectedStatus = pm.environment.get(\"ExpectedStatus\");\r",
+											"\r",
+											"console.log(`🔍 Running negative test validation | TestType: ${testType}`);\r",
+											"\r",
+											"pm.execution.setNextRequest(null);  // Stop next request for this negative case\r",
+											"\r",
+											"// Assert status code\r",
+											"pm.test(`Status code is ${expectedStatus}`, function () {\r",
+											"    pm.expect(pm.response.code).to.eql(Number(expectedStatus));\r",
+											"});\r",
+											"\r",
+											"// If 422, validate error response structure\r",
+											"if (Number(expectedStatus) === 422) {\r",
+											"    let jsonData = {};\r",
+											"    try {\r",
+											"        jsonData = pm.response.json();\r",
+											"    } catch (e) {\r",
+											"        console.error(\"❌ Failed to parse JSON response\", e);\r",
+											"    }\r",
+											"\r",
+											"    pm.test(\"Response meta is null\", function () {\r",
+											"        pm.expect(jsonData.meta).to.eql(null);\r",
+											"    });\r",
+											"\r",
+											"    pm.test(\"Response data is array of errors\", function () {\r",
+											"        pm.expect(jsonData.data).to.be.an(\"array\");\r",
+											"        pm.expect(jsonData.data.length).to.be.above(0);\r",
+											"        jsonData.data.forEach(function (error) {\r",
+											"            pm.expect(error).to.have.property(\"field\");\r",
+											"            pm.expect(error).to.have.property(\"message\");\r",
+											"        });\r",
+											"    });\r",
+											"\r",
+											"    console.log(\"💡 Validation errors:\", jsonData.data);\r",
+											"}\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"// const testType = pm.iterationData.get(\"TestType\");\r",
+											"\r",
+											"// if (!testType) {\r",
+											"//     console.warn(\"⚠️ TestType is not defined in data file.\");\r",
+											"// } else {\r",
+											"//     console.log(`🔍 Running iteration with TestType: ${testType}`);\r",
+											"// }\r",
+											"const testType = pm.iterationData.get(\"TestType\");\r",
+											"const expectedStatus = pm.iterationData.get(\"ExpectedStatus\");\r",
+											"\r",
+											"if (!testType) {\r",
+											"    console.warn(\"⚠️ TestType is not defined in data file.\");\r",
+											"} else {\r",
+											"    console.log(`🔍 Running iteration with TestType: ${testType}`);\r",
+											"}\r",
+											"\r",
+											"console.log(`👉 Raw ExpectedStatus from CSV:`, expectedStatus);\r",
+											"\r",
+											"if (expectedStatus) {\r",
+											"    pm.environment.set(\"ExpectedStatus\", expectedStatus);\r",
+											"    console.log(`✅ ExpectedStatus set for this iteration: ${expectedStatus}`);\r",
+											"} else {\r",
+											"    pm.environment.set(\"ExpectedStatus\", \"422\");\r",
+											"    console.warn(\"⚠️ ExpectedStatus is not defined in data file — defaulting to 422\");\r",
+											"}\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"\",\r\n    \"email\": \"Webster_Schaefer77@example.net\",\r\n    \"gender\": \"male\",\r\n    \"status\": \"active\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}{{usersEndpoint}}",
+									"host": [
+										"{{BASE_URL}}{{usersEndpoint}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "[users-026] Create new user with invalid email",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"// const testType = pm.iterationData.get(\"TestType\");\r",
+											"\r",
+											"// if (!testType || !testType.startsWith(\"POST-INVALID-EMAIL\")) {\r",
+											"//     console.log(`⏭ Skipping validation for Negative Folder | TestType: ${testType}`);\r",
+											"//     return;\r",
+											"// }\r",
+											"\r",
+											"// console.log(`✅ Validating Negative Test for TestType: ${testType}`);\r",
+											"// postman.setNextRequest(null);\r",
+											"const testType = pm.iterationData.get(\"TestType\");\r",
+											"const expectedStatus = pm.environment.get(\"ExpectedStatus\");\r",
+											"\r",
+											"console.log(`🔍 Running negative test validation | TestType: ${testType}`);\r",
+											"\r",
+											"pm.execution.setNextRequest(null);  // Stop next request for this negative case\r",
+											"\r",
+											"// Assert status code\r",
+											"pm.test(`Status code is ${expectedStatus}`, function () {\r",
+											"    pm.expect(pm.response.code).to.eql(Number(expectedStatus));\r",
+											"});\r",
+											"\r",
+											"// If 422, validate error response structure\r",
+											"if (Number(expectedStatus) === 422) {\r",
+											"    let jsonData = {};\r",
+											"    try {\r",
+											"        jsonData = pm.response.json();\r",
+											"    } catch (e) {\r",
+											"        console.error(\"❌ Failed to parse JSON response\", e);\r",
+											"    }\r",
+											"\r",
+											"    pm.test(\"Response meta is null\", function () {\r",
+											"        pm.expect(jsonData.meta).to.eql(null);\r",
+											"    });\r",
+											"\r",
+											"    pm.test(\"Response data is array of errors\", function () {\r",
+											"        pm.expect(jsonData.data).to.be.an(\"array\");\r",
+											"        pm.expect(jsonData.data.length).to.be.above(0);\r",
+											"        jsonData.data.forEach(function (error) {\r",
+											"            pm.expect(error).to.have.property(\"field\");\r",
+											"            pm.expect(error).to.have.property(\"message\");\r",
+											"        });\r",
+											"    });\r",
+											"\r",
+											"    console.log(\"💡 Validation errors:\", jsonData.data);\r",
+											"}\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"// const testType = pm.iterationData.get(\"TestType\");\r",
+											"\r",
+											"// if (!testType) {\r",
+											"//     console.warn(\"⚠️ TestType is not defined in data file.\");\r",
+											"// } else {\r",
+											"//     console.log(`🔍 Running iteration with TestType: ${testType}`);\r",
+											"// }\r",
+											"const testType = pm.iterationData.get(\"TestType\");\r",
+											"const expectedStatus = pm.iterationData.get(\"ExpectedStatus\");\r",
+											"\r",
+											"if (!testType) {\r",
+											"    console.warn(\"⚠️ TestType is not defined in data file.\");\r",
+											"} else {\r",
+											"    console.log(`🔍 Running iteration with TestType: ${testType}`);\r",
+											"}\r",
+											"\r",
+											"console.log(`👉 Raw ExpectedStatus from CSV:`, expectedStatus);\r",
+											"\r",
+											"if (expectedStatus) {\r",
+											"    pm.environment.set(\"ExpectedStatus\", expectedStatus);\r",
+											"    console.log(`✅ ExpectedStatus set for this iteration: ${expectedStatus}`);\r",
+											"} else {\r",
+											"    pm.environment.set(\"ExpectedStatus\", \"422\");  // Fallback\r",
+											"    console.warn(\"⚠️ ExpectedStatus is not defined in data file — defaulting to 422\");\r",
+											"}\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"Elbert Gulgowski\",\r\n    \"email\": \"Webster_Schaefer77net\",\r\n    \"gender\": \"male\",\r\n    \"status\": \"active\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}{{usersEndpoint}}",
+									"host": [
+										"{{BASE_URL}}{{usersEndpoint}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "[users-027] Create new user with invalid gender",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"// const testType = pm.iterationData.get(\"TestType\");\r",
+											"\r",
+											"// if (!testType || !testType.startsWith(\"POST-INVALID-GENDER\")) {\r",
+											"//     console.log(`⏭ Skipping validation for Negative Folder | TestType: ${testType}`);\r",
+											"//     return;\r",
+											"// }\r",
+											"\r",
+											"// console.log(`✅ Validating Negative Test for TestType: ${testType}`);\r",
+											"// postman.setNextRequest(null);\r",
+											"const testType = pm.iterationData.get(\"TestType\");\r",
+											"const expectedStatus = pm.environment.get(\"ExpectedStatus\");\r",
+											"\r",
+											"console.log(`🔍 Running negative test validation | TestType: ${testType}`);\r",
+											"\r",
+											"pm.execution.setNextRequest(null);  // Stop next request for this negative case\r",
+											"\r",
+											"// Assert status code\r",
+											"pm.test(`Status code is ${expectedStatus}`, function () {\r",
+											"    pm.expect(pm.response.code).to.eql(Number(expectedStatus));\r",
+											"});\r",
+											"\r",
+											"// If 422, validate error response structure\r",
+											"if (Number(expectedStatus) === 422) {\r",
+											"    let jsonData = {};\r",
+											"    try {\r",
+											"        jsonData = pm.response.json();\r",
+											"    } catch (e) {\r",
+											"        console.error(\"❌ Failed to parse JSON response\", e);\r",
+											"    }\r",
+											"\r",
+											"    pm.test(\"Response meta is null\", function () {\r",
+											"        pm.expect(jsonData.meta).to.eql(null);\r",
+											"    });\r",
+											"\r",
+											"    pm.test(\"Response data is array of errors\", function () {\r",
+											"        pm.expect(jsonData.data).to.be.an(\"array\");\r",
+											"        pm.expect(jsonData.data.length).to.be.above(0);\r",
+											"        jsonData.data.forEach(function (error) {\r",
+											"            pm.expect(error).to.have.property(\"field\");\r",
+											"            pm.expect(error).to.have.property(\"message\");\r",
+											"        });\r",
+											"    });\r",
+											"\r",
+											"    console.log(\"💡 Validation errors:\", jsonData.data);\r",
+											"}\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"// const testType = pm.iterationData.get(\"TestType\");\r",
+											"\r",
+											"// if (!testType) {\r",
+											"//     console.warn(\"⚠️ TestType is not defined in data file.\");\r",
+											"// } else {\r",
+											"//     console.log(`🔍 Running iteration with TestType: ${testType}`);\r",
+											"// }\r",
+											"const testType = pm.iterationData.get(\"TestType\");\r",
+											"const expectedStatus = pm.iterationData.get(\"ExpectedStatus\");\r",
+											"\r",
+											"if (!testType) {\r",
+											"    console.warn(\"⚠️ TestType is not defined in data file.\");\r",
+											"} else {\r",
+											"    console.log(`🔍 Running iteration with TestType: ${testType}`);\r",
+											"}\r",
+											"\r",
+											"console.log(`👉 Raw ExpectedStatus from CSV:`, expectedStatus);\r",
+											"\r",
+											"if (expectedStatus) {\r",
+											"    pm.environment.set(\"ExpectedStatus\", expectedStatus);\r",
+											"    console.log(`✅ ExpectedStatus set for this iteration: ${expectedStatus}`);\r",
+											"} else {\r",
+											"    pm.environment.set(\"ExpectedStatus\", \"422\");\r",
+											"    console.warn(\"⚠️ ExpectedStatus is not defined in data file — defaulting to 422\");\r",
+											"}\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"Elbert Gulgowski\",\r\n    \"email\": \"Webster_Schaefer77@example.net\",\r\n    \"gender\": \"xxxx\",\r\n    \"status\": \"active\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}{{usersEndpoint}}",
+									"host": [
+										"{{BASE_URL}}{{usersEndpoint}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "[users-029] Get single user with invalid userID",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"// const testType = pm.iterationData.get(\"TestType\");\r",
+											"\r",
+											"// if (!testType || !testType.startsWith(\"GET-INVALID-USERID\")) {\r",
+											"//     console.log(`⏭ Skipping validation for Negative Folder | TestType: ${testType}`);\r",
+											"//     return;\r",
+											"// }\r",
+											"\r",
+											"// console.log(`✅ Validating Negative Test for TestType: ${testType}`);\r",
+											"// postman.setNextRequest(null);\r",
+											"const testType = pm.iterationData.get(\"TestType\");\r",
+											"const expectedStatus = pm.environment.get(\"ExpectedStatus\");\r",
+											"\r",
+											"console.log(`🔍 Running negative test validation | TestType: ${testType}`);\r",
+											"\r",
+											"pm.execution.setNextRequest(null);  // Stop next request for this negative case\r",
+											"\r",
+											"// Assert status code\r",
+											"pm.test(`Status code is ${expectedStatus}`, function () {\r",
+											"    pm.expect(pm.response.code).to.eql(Number(expectedStatus));\r",
+											"});\r",
+											"\r",
+											"// If 404, validate error structure\r",
+											"if (Number(expectedStatus) === 404) {\r",
+											"    let jsonData = {};\r",
+											"    try {\r",
+											"        jsonData = pm.response.json();\r",
+											"    } catch (e) {\r",
+											"        console.error(\"❌ Failed to parse JSON response\", e);\r",
+											"    }\r",
+											"\r",
+											"    pm.test(\"Response meta is null\", function () {\r",
+											"        pm.expect(jsonData.meta).to.eql(null);\r",
+											"    });\r",
+											"\r",
+											"    pm.test(\"Response data contains 'message' field\", function () {\r",
+											"        pm.expect(jsonData.data).to.have.property(\"message\");\r",
+											"        pm.expect(jsonData.data.message).to.be.a(\"string\");\r",
+											"    });\r",
+											"\r",
+											"    console.log(\"💡 404 error message:\", jsonData.data.message);\r",
+											"}\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"// const testType = pm.iterationData.get(\"TestType\");\r",
+											"\r",
+											"// if (!testType) {\r",
+											"//     console.warn(\"⚠️ TestType is not defined in data file.\");\r",
+											"// } else {\r",
+											"//     console.log(`🔍 Running iteration with TestType: ${testType}`);\r",
+											"// }\r",
+											"const testType = pm.iterationData.get(\"TestType\");\r",
+											"const expectedStatus = pm.iterationData.get(\"ExpectedStatus\");\r",
+											"\r",
+											"if (!testType) {\r",
+											"    console.warn(\"⚠️ TestType is not defined in data file.\");\r",
+											"} else {\r",
+											"    console.log(`🔍 Running iteration with TestType: ${testType}`);\r",
+											"}\r",
+											"\r",
+											"console.log(`👉 Raw ExpectedStatus from CSV:`, expectedStatus);\r",
+											"\r",
+											"if (expectedStatus) {\r",
+											"    pm.environment.set(\"ExpectedStatus\", expectedStatus);\r",
+											"    console.log(`✅ ExpectedStatus set for this iteration: ${expectedStatus}`);\r",
+											"} else {\r",
+											"    pm.environment.set(\"ExpectedStatus\", \"404\");  // Default for invalid ID\r",
+											"    console.warn(\"⚠️ ExpectedStatus is not defined in data file — defaulting to 404\");\r",
+											"}\r",
+											"\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{BASE_URL}}{{usersEndpoint}}/9999999",
+									"host": [
+										"{{BASE_URL}}{{usersEndpoint}}"
+									],
+									"path": [
+										"9999999"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "[users-030] Put update Invalid Email",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"// const testType = pm.iterationData.get(\"TestType\");\r",
+											"\r",
+											"// if (!testType || !testType.startsWith(\"PUT-INVALID-EMAIL\")) {\r",
+											"//     console.log(`⏭ Skipping validation for Negative Folder | TestType: ${testType}`);\r",
+											"//     return;\r",
+											"// }\r",
+											"\r",
+											"// console.log(`✅ Validating Negative Test for TestType: ${testType}`);\r",
+											"// postman.setNextRequest(null);\r",
+											"// Assert status code\r",
+											"let jsonData = {};\r",
+											"try {\r",
+											"    jsonData = pm.response.json();\r",
+											"    console.log(\"📩 Parsed JSON:\", jsonData);\r",
+											"} catch (e) {\r",
+											"    console.error(\"❌ Failed to parse JSON response\", e);\r",
+											"}\r",
+											"\r",
+											"if (pm.response.code === 404) {\r",
+											"    pm.test(\"404 response has correct message\", function () {\r",
+											"        pm.expect(jsonData.data.message).to.eql(\"Resource not found\");\r",
+											"    });\r",
+											"}\r",
+											"\r",
+											"if (pm.response.code === 422) {\r",
+											"    pm.test(\"Response meta is null\", function () {\r",
+											"        pm.expect(jsonData.meta).to.eql(null);\r",
+											"    });\r",
+											"\r",
+											"    pm.test(\"Response data is array of errors\", function () {\r",
+											"        pm.expect(jsonData.data).to.be.an(\"array\");\r",
+											"        pm.expect(jsonData.data.length).to.be.above(0);\r",
+											"        jsonData.data.forEach(function (error) {\r",
+											"            pm.expect(error).to.have.property(\"field\");\r",
+											"            pm.expect(error).to.have.property(\"message\");\r",
+											"        });\r",
+											"    });\r",
+											"\r",
+											"    pm.test(\"Response contains at least one missing field error\", function () {\r",
+											"        const missingFieldError = jsonData.data.find(err => err.field);\r",
+											"        pm.expect(missingFieldError).to.exist;\r",
+											"    });\r",
+											"}\r",
+											"\r",
+											"pm.execution.setNextRequest(null);\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"// const testType = pm.iterationData.get(\"TestType\");\r",
+											"\r",
+											"// if (!testType) {\r",
+											"//     console.warn(\"⚠️ TestType is not defined in data file.\");\r",
+											"// } else {\r",
+											"//     console.log(`🔍 Running iteration with TestType: ${testType}`);\r",
+											"// }\r",
+											"const testType = pm.iterationData.get(\"TestType\");\r",
+											"const expectedStatus = pm.iterationData.get(\"ExpectedStatus\");\r",
+											"\r",
+											"if (!testType) {\r",
+											"    console.warn(\"⚠️ TestType is not defined in data file.\");\r",
+											"} else {\r",
+											"    console.log(`🔍 Running iteration with TestType: ${testType}`);\r",
+											"}\r",
+											"\r",
+											"console.log(`👉 Raw ExpectedStatus from CSV:`, expectedStatus);\r",
+											"\r",
+											"if (expectedStatus) {\r",
+											"    pm.environment.set(\"ExpectedStatus\", expectedStatus);\r",
+											"    console.log(`✅ ExpectedStatus set for this iteration: ${expectedStatus}`);\r",
+											"} else {\r",
+											"    pm.environment.set(\"ExpectedStatus\", \"422\");  // Default fallback for invalid PUT input\r",
+											"    console.warn(\"⚠️ ExpectedStatus is not defined in data file — defaulting to 422\");\r",
+											"}\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"{{put_name}}\", \r\n    \"gender\": \"{{put_gender}}\", \r\n    \"email\": \"{{put_email}}\", \r\n    \"status\": \"{{put_status}}\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}{{usersEndpoint}}/{{UserId}}",
+									"host": [
+										"{{BASE_URL}}{{usersEndpoint}}"
+									],
+									"path": [
+										"{{UserId}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "[users-031] Put update user with missing field",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"// const testType = pm.iterationData.get(\"TestType\");\r",
+											"\r",
+											"// if (!testType || !testType.startsWith(\"PUT-MISSING-FIELD\")) {\r",
+											"//     console.log(`⏭ Skipping validation for Negative Folder | TestType: ${testType}`);\r",
+											"//     return;\r",
+											"// }\r",
+											"\r",
+											"// console.log(`✅ Validating Negative Test for TestType: ${testType}`);\r",
+											"// postman.setNextRequest(null);\r",
+											"let jsonData = {};\r",
+											"try {\r",
+											"    jsonData = pm.response.json();\r",
+											"    console.log(\"📩 Parsed JSON:\", jsonData);\r",
+											"} catch (e) {\r",
+											"    console.error(\"❌ Failed to parse JSON response\", e);\r",
+											"}\r",
+											"\r",
+											"if (pm.response.code === 404) {\r",
+											"    pm.test(\"404 response has correct message\", function () {\r",
+											"        pm.expect(jsonData.data.message).to.eql(\"Resource not found\");\r",
+											"    });\r",
+											"}\r",
+											"\r",
+											"if (pm.response.code === 422) {\r",
+											"    pm.test(\"Response meta is null\", function () {\r",
+											"        pm.expect(jsonData.meta).to.eql(null);\r",
+											"    });\r",
+											"\r",
+											"    pm.test(\"Response data is array of errors\", function () {\r",
+											"        pm.expect(jsonData.data).to.be.an(\"array\");\r",
+											"        pm.expect(jsonData.data.length).to.be.above(0);\r",
+											"        jsonData.data.forEach(function (error) {\r",
+											"            pm.expect(error).to.have.property(\"field\");\r",
+											"            pm.expect(error).to.have.property(\"message\");\r",
+											"        });\r",
+											"    });\r",
+											"\r",
+											"    pm.test(\"Response contains at least one missing field error\", function () {\r",
+											"        const missingFieldError = jsonData.data.find(err => err.field);\r",
+											"        pm.expect(missingFieldError).to.exist;\r",
+											"    });\r",
+											"}\r",
+											"\r",
+											"pm.execution.setNextRequest(null);\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"// const testType = pm.iterationData.get(\"TestType\");\r",
+											"\r",
+											"// if (!testType) {\r",
+											"//     console.warn(\"⚠️ TestType is not defined in data file.\");\r",
+											"// } else {\r",
+											"//     console.log(`🔍 Running iteration with TestType: ${testType}`);\r",
+											"// }\r",
+											"const testType = pm.iterationData.get(\"TestType\");\r",
+											"const expectedStatus = pm.iterationData.get(\"ExpectedStatus\");\r",
+											"\r",
+											"if (!testType) {\r",
+											"    console.warn(\"⚠️ TestType is not defined in data file.\");\r",
+											"} else {\r",
+											"    console.log(`🔍 Running iteration with TestType: ${testType}`);\r",
+											"}\r",
+											"\r",
+											"console.log(`👉 Raw ExpectedStatus from CSV:`, expectedStatus);\r",
+											"\r",
+											"if (expectedStatus) {\r",
+											"    pm.environment.set(\"ExpectedStatus\", expectedStatus);\r",
+											"    console.log(`✅ ExpectedStatus set for this iteration: ${expectedStatus}`);\r",
+											"} else {\r",
+											"    pm.environment.set(\"ExpectedStatus\", \"422\");  // Default fallback\r",
+											"    console.warn(\"⚠️ ExpectedStatus is not defined in data file — defaulting to 422\");\r",
+											"}\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"{{put_name}}\",\r\n    \"gender\": \"\",\r\n    \"email\":  \"\",\r\n    \"status\": \"\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}{{usersEndpoint}}/{{UserId}}",
+									"host": [
+										"{{BASE_URL}}{{usersEndpoint}}"
+									],
+									"path": [
+										"{{UserId}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "[users-032] PATCH update user with INVALID EMAIL",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"// const testType = pm.iterationData.get(\"TestType\");\r",
+											"\r",
+											"// if (!testType || !testType.startsWith(\"PATCH-INVALID-EMAIL\")) {\r",
+											"//     console.log(`⏭ Skipping validation for Negative Folder | TestType: ${testType}`);\r",
+											"//     return;\r",
+											"// }\r",
+											"\r",
+											"// console.log(`✅ Validating Negative Test for TestType: ${testType}`);\r",
+											"// postman.setNextRequest(null);\r",
+											"let jsonData = {};\r",
+											"try {\r",
+											"    jsonData = pm.response.json();\r",
+											"    console.log(\"📩 Parsed JSON:\", jsonData);\r",
+											"} catch (e) {\r",
+											"    console.error(\"❌ Failed to parse JSON response\", e);\r",
+											"}\r",
+											"\r",
+											"if (pm.response.code === 404) {\r",
+											"    pm.test(\"404 response has correct message\", function () {\r",
+											"        pm.expect(jsonData.data.message).to.eql(\"Resource not found\");\r",
+											"    });\r",
+											"}\r",
+											"\r",
+											"if (pm.response.code === 422) {\r",
+											"    pm.test(\"Response meta is null\", function () {\r",
+											"        pm.expect(jsonData.meta).to.eql(null);\r",
+											"    });\r",
+											"\r",
+											"    pm.test(\"Response data is array of errors\", function () {\r",
+											"        pm.expect(jsonData.data).to.be.an(\"array\");\r",
+											"        pm.expect(jsonData.data.length).to.be.above(0);\r",
+											"        jsonData.data.forEach(function (error) {\r",
+											"            pm.expect(error).to.have.property(\"field\");\r",
+											"            pm.expect(error).to.have.property(\"message\");\r",
+											"        });\r",
+											"    });\r",
+											"\r",
+											"    pm.test(\"Response contains at least one missing field error\", function () {\r",
+											"        const missingFieldError = jsonData.data.find(err => err.field);\r",
+											"        pm.expect(missingFieldError).to.exist;\r",
+											"    });\r",
+											"}\r",
+											"\r",
+											"pm.execution.setNextRequest(null);\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"// const testType = pm.iterationData.get(\"TestType\");\r",
+											"\r",
+											"// if (!testType) {\r",
+											"//     console.warn(\"⚠️ TestType is not defined in data file.\");\r",
+											"// } else {\r",
+											"//     console.log(`🔍 Running iteration with TestType: ${testType}`);\r",
+											"// }\r",
+											"const testType = pm.iterationData.get(\"TestType\");\r",
+											"const expectedStatus = pm.iterationData.get(\"ExpectedStatus\");\r",
+											"\r",
+											"if (!testType) {\r",
+											"    console.warn(\"⚠️ TestType is not defined in data file.\");\r",
+											"} else {\r",
+											"    console.log(`🔍 Running iteration with TestType: ${testType}`);\r",
+											"}\r",
+											"\r",
+											"console.log(`👉 Raw ExpectedStatus from CSV:`, expectedStatus);\r",
+											"\r",
+											"if (expectedStatus) {\r",
+											"    pm.environment.set(\"ExpectedStatus\", expectedStatus);\r",
+											"    console.log(`✅ ExpectedStatus set for this iteration: ${expectedStatus}`);\r",
+											"} else {\r",
+											"    pm.environment.set(\"ExpectedStatus\", \"422\");\r",
+											"    console.warn(\"⚠️ ExpectedStatus is not defined in data file — defaulting to 422\");\r",
+											"}\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"{{patch_name}}\", \r\n    \"gender\": \"{{patch_gender}}\", \r\n    \"email\": \"{{patch_email}}\", \r\n    \"status\": \"{{patch_status}}\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}{{usersEndpoint}}/{{UserId}}",
+									"host": [
+										"{{BASE_URL}}{{usersEndpoint}}"
+									],
+									"path": [
+										"{{UserId}}"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"packages": {},
+								"exec": [
+									"// // Set common values in the environment\r",
+									"// pm.environment.set(\"BASE_URL\", \"https://gorest.co.in/public/v1\");\r",
+									"// pm.environment.set(\"BearerToken\", \"a64d9dde7c556f9f1629b67bb5af591d459e4e2cc4537b01679a693cce3cd9aa\");\r",
+									"// pm.environment.set(\"usersEndpoint\", \"/users\");\r",
+									"\r",
+									"// // Generate random email\r",
+									"// let post_NegativeEmail = `user_${Math.floor(Math.random() * 100000)}@test.com`;\r",
+									"// pm.environment.set(\"post_NegativeEmail\", post_NegativeEmail);\r",
+									"// console.log(\"Generated Email:\", post_NegativeEmail);\r",
+									"\r",
+									"// // Generate random name (full name)\r",
+									"// const firstNames = [\"John\", \"Jane\", \"Alex\", \"Chris\"];\r",
+									"// const lastNames = [\"Smith\", \"Johnson\", \"Brown\", \"Davis\"];\r",
+									"// const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];\r",
+									"// const lastName = lastNames[Math.floor(Math.random() * lastNames.length)];\r",
+									"// const post_NegativeName = `${firstName} ${lastName}`;  // String interpolation\r",
+									"// pm.environment.set(\"post_NegativeName\", post_NegativeName);\r",
+									"// console.log(\"Generated Name:\", post_NegativeName);"
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"packages": {},
+								"exec": [
+									""
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "./posts",
+					"item": [
+						{
+							"name": "[posts-033] create a user post with invalid user ID Copy",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"// const testType = pm.iterationData.get(\"TestType\");",
+											"",
+											"// if (!testType || !testType.startsWith(\"POSTS-POST-INVALID-USERID\")) {",
+											"//     console.log(`⏭ Skipping validation for Negative Folder | TestType: ${testType}`);",
+											"//     return;",
+											"// }",
+											"",
+											"// console.log(`✅ Validating Negative Test for TestType: ${testType}`);",
+											"// postman.setNextRequest(null);",
+											"const testType = pm.iterationData.get(\"TestType\");",
+											"",
+											"if (!testType || !testType.startsWith(\"POSTS-POST-INVALID-USERID\")) {",
+											"    console.log(`⏭ Skipping validation for Negative Folder | TestType: ${testType}`);",
+											"    return;",
+											"}",
+											"",
+											"console.log(`✅ Validating Negative Test for TestType: ${testType}`);",
+											"",
+											"// Stop next request",
+											"pm.execution.setNextRequest(null);",
+											"",
+											"// Parse response",
+											"let jsonData = {};",
+											"try {",
+											"    jsonData = pm.response.json();",
+											"    console.log(\"📩 Parsed JSON:\", jsonData);",
+											"} catch (e) {",
+											"    console.error(\"❌ Failed to parse JSON response\", e);",
+											"}",
+											"",
+											"// Assert status code",
+											"pm.test(\"Status code is 422\", function () {",
+											"    pm.expect(pm.response.code).to.eql(422);",
+											"});",
+											"",
+											"// Assert meta is null",
+											"pm.test(\"Response meta is null\", function () {",
+											"    pm.expect(jsonData.meta).to.eql(null);",
+											"});",
+											"",
+											"// Assert data is array of errors",
+											"pm.test(\"Response data is array of errors\", function () {",
+											"    pm.expect(jsonData.data).to.be.an(\"array\");",
+											"    pm.expect(jsonData.data.length).to.be.above(0);",
+											"});",
+											"",
+											"// Assert specific field errors",
+											"const fieldsToCheck = [\"user\", \"user_id\", \"title\", \"body\"];",
+											"fieldsToCheck.forEach(fieldName => {",
+											"    pm.test(`Response contains error for ${fieldName}`, function () {",
+											"        const fieldError = jsonData.data.find(err => err.field === fieldName);",
+											"        pm.expect(fieldError, `Expected error for field: ${fieldName}`).to.exist;",
+											"        pm.expect(fieldError.message).to.be.a(\"string\");",
+											"    });",
+											"});",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const testType = pm.iterationData.get(\"TestType\");\r",
+											"\r",
+											"if (!testType) {\r",
+											"    console.warn(\"⚠️ TestType is not defined in data file.\");\r",
+											"} else {\r",
+											"    console.log(`🔍 Running iteration with TestType: ${testType}`);\r",
+											"}\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{BASE_URL}}/{{usersEndpoint}}/@@/{{postEndpoint}}",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"{{usersEndpoint}}",
+										"@@",
+										"{{postEndpoint}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "[posts-034] create a user post with valid user ID and invalid body",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"// const testType = pm.iterationData.get(\"TestType\");",
+											"",
+											"// if (!testType || !testType.startsWith(\"POSTS-POST-INVALID-BODY\")) {",
+											"//     console.log(`⏭ Skipping validation for Negative Folder | TestType: ${testType}`);",
+											"//     return;",
+											"// }",
+											"",
+											"// console.log(`✅ Validating Negative Test for TestType: ${testType}`);",
+											"// postman.setNextRequest(null);",
+											"const testType = pm.iterationData.get(\"TestType\");",
+											"",
+											"if (!testType || !testType.startsWith(\"POSTS-POST-INVALID-BODY\")) {",
+											"    console.log(`⏭ Skipping validation for Negative Folder | TestType: ${testType}`);",
+											"    return;",
+											"}",
+											"",
+											"console.log(`✅ Validating Negative Test for TestType: ${testType}`);",
+											"",
+											"// Stop next request",
+											"pm.execution.setNextRequest(null);",
+											"",
+											"// Parse response",
+											"let jsonData = {};",
+											"try {",
+											"    jsonData = pm.response.json();",
+											"    console.log(\"📩 Parsed JSON:\", jsonData);",
+											"} catch (e) {",
+											"    console.error(\"❌ Failed to parse JSON response\", e);",
+											"}",
+											"",
+											"// Assert status code",
+											"pm.test(\"Status code is 422\", function () {",
+											"    pm.expect(pm.response.code).to.eql(422);",
+											"});",
+											"",
+											"// Assert meta is null",
+											"pm.test(\"Response meta is null\", function () {",
+											"    pm.expect(jsonData.meta).to.eql(null);",
+											"});",
+											"",
+											"// Assert data is array of errors",
+											"pm.test(\"Response data is array of errors\", function () {",
+											"    pm.expect(jsonData.data).to.be.an(\"array\");",
+											"    pm.expect(jsonData.data.length).to.be.above(0);",
+											"});",
+											"",
+											"// Assert specific field errors",
+											"const fieldsToCheck = [\"title\", \"body\"];",
+											"fieldsToCheck.forEach(fieldName => {",
+											"    pm.test(`Response contains error for ${fieldName}`, function () {",
+											"        const fieldError = jsonData.data.find(err => err.field === fieldName);",
+											"        pm.expect(fieldError, `Expected error for field: ${fieldName}`).to.exist;",
+											"        pm.expect(fieldError.message).to.be.a(\"string\");",
+											"    });",
+											"});",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const testType = pm.iterationData.get(\"TestType\");\r",
+											"\r",
+											"if (!testType) {\r",
+											"    console.warn(\"⚠️ TestType is not defined in data file.\");\r",
+											"} else {\r",
+											"    console.log(`🔍 Running iteration with TestType: ${testType}`);\r",
+											"}\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{BearerToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"title\":\"\"\n    \n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}{{usersEndpoint}}/{{UserId}}}{{postEndpoint}}",
+									"host": [
+										"{{BASE_URL}}{{usersEndpoint}}"
+									],
+									"path": [
+										"{{UserId}}}{{postEndpoint}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "[posts-035] create a user post with valid user ID without body",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const testType = pm.iterationData.get(\"TestType\");",
+											"",
+											"if (!testType || !testType.startsWith(\"POSTS-POST-NOBODY\")) {",
+											"    console.log(`⏭ Skipping validation for Negative Folder | TestType: ${testType}`);",
+											"    return;",
+											"}",
+											"",
+											"console.log(`✅ Validating Negative Test for TestType: ${testType}`);",
+											"pm.execution.setNextRequest(null);",
+											"// const testType = pm.iterationData.get(\"TestType\");",
+											"// console.log(`📝 TestType from CSV: ${testType}`);",
+											"",
+											"// if (!testType || !testType.startsWith(\"POSTS-035\")) {",
+											"//     console.log(`⏭ Skipping validation for Negative Folder | TestType: ${testType}`);",
+											"//     return;",
+											"// }",
+											"",
+											"// console.log(`✅ Validating Negative Test for TestType: ${testType}`);",
+											"",
+											"// // Stop next request",
+											"// pm.execution.setNextRequest(null);",
+											"",
+											"// // Parse response",
+											"// let jsonData = {};",
+											"// try {",
+											"//     jsonData = pm.response.json();",
+											"//     console.log(\"📩 Parsed JSON:\", jsonData);",
+											"// } catch (e) {",
+											"//     console.error(\"❌ Failed to parse JSON response\", e);",
+											"// }",
+											"",
+											"// // Assert status code",
+											"// pm.test(\"Status code is 422\", function () {",
+											"//     pm.expect(pm.response.code).to.eql(422);",
+											"// });",
+											"",
+											"// // Assert meta is null",
+											"// pm.test(\"Response meta is null\", function () {",
+											"//     pm.expect(jsonData.meta).to.eql(null);",
+											"// });",
+											"",
+											"// // Assert data is array of errors",
+											"// pm.test(\"Response data is array of errors\", function () {",
+											"//     pm.expect(jsonData.data).to.be.an(\"array\");",
+											"//     pm.expect(jsonData.data.length).to.be.above(0);",
+											"// });",
+											"",
+											"// // Assert specific field errors",
+											"// const fieldsToCheck = [\"user\", \"user_id\", \"title\", \"body\"];",
+											"// fieldsToCheck.forEach(fieldName => {",
+											"//     pm.test(`Response contains error for ${fieldName}`, function () {",
+											"//         const fieldError = jsonData.data.find(err => err.field === fieldName);",
+											"//         pm.expect(fieldError, `Expected error for field: ${fieldName}`).to.exist;",
+											"//         pm.expect(fieldError.message).to.be.a(\"string\");",
+											"//     });",
+											"// });",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const testType = pm.iterationData.get(\"TestType\");\r",
+											"\r",
+											"if (!testType) {\r",
+											"    console.warn(\"⚠️ TestType is not defined in data file.\");\r",
+											"} else {\r",
+											"    console.log(`🔍 Running iteration with TestType: ${testType}`);\r",
+											"}\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{BASE_URL}}{{usersEndpoint}}/{{UserId}}}{{postEndpoint}}",
+									"host": [
+										"{{BASE_URL}}{{usersEndpoint}}"
+									],
+									"path": [
+										"{{UserId}}}{{postEndpoint}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "[posts-036 all users post with BADPAGE",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const testType = pm.iterationData.get(\"TestType\");",
+											"",
+											"if (!testType || !testType.startsWith(\"POSTS-GET-ALL-USERS-BAD-PAGE\")) {",
+											"    console.log(`⏭ Skipping validation for Negative Folder | TestType: ${testType}`);",
+											"    return;",
+											"}",
+											"",
+											"console.log(`✅ Validating Negative Test for TestType: ${testType}`);",
+											"pm.execution.setNextRequest(null);"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const testType = pm.iterationData.get(\"TestType\");\r",
+											"\r",
+											"if (!testType) {\r",
+											"    console.warn(\"⚠️ TestType is not defined in data file.\");\r",
+											"} else {\r",
+											"    console.log(`🔍 Running iteration with TestType: ${testType}`);\r",
+											"}\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{BearerToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "",
+										"value": "",
+										"type": "text",
+										"disabled": true
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}{{postEndpoint}}?body=!@#$%",
+									"host": [
+										"{{BASE_URL}}{{postEndpoint}}"
+									],
+									"query": [
+										{
+											"key": "body",
+											"value": "!@"
+										}
+									],
+									"hash": "$%"
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "[posts-037]  posted post by using invalid post ID",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const testType = pm.iterationData.get(\"TestType\");",
+											"",
+											"if (!testType || !testType.startsWith(\"POSTS-GETBY-INVALID-USERID\")) {",
+											"    console.log(`⏭ Skipping validation for Negative Folder | TestType: ${testType}`);",
+											"    return;",
+											"}",
+											"",
+											"console.log(`✅ Validating Negative Test for TestType: ${testType}`);",
+											"pm.execution.setNextRequest(null);"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const testType = pm.iterationData.get(\"TestType\");\r",
+											"\r",
+											"if (!testType) {\r",
+											"    console.warn(\"⚠️ TestType is not defined in data file.\");\r",
+											"} else {\r",
+											"    console.log(`🔍 Running iteration with TestType: ${testType}`);\r",
+											"}\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{BearerToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "",
+										"value": "",
+										"type": "text",
+										"disabled": true
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}{{postEndpoint}}/aa",
+									"host": [
+										"{{BASE_URL}}{{postEndpoint}}"
+									],
+									"path": [
+										"aa"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "[posts-038] update user post title and body with Invalid body",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const testType = pm.iterationData.get(\"TestType\");",
+											"",
+											"if (!testType || !testType.startsWith(\"POSTS-PUT-INVALID-BODY\")) {",
+											"    console.log(`⏭ Skipping validation for Negative Folder | TestType: ${testType}`);",
+											"    return;",
+											"}",
+											"",
+											"console.log(`✅ Validating Negative Test for TestType: ${testType}`);",
+											"pm.execution.setNextRequest(null);"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const testType = pm.iterationData.get(\"TestType\");\r",
+											"\r",
+											"if (!testType) {\r",
+											"    console.warn(\"⚠️ TestType is not defined in data file.\");\r",
+											"} else {\r",
+											"    console.log(`🔍 Running iteration with TestType: ${testType}`);\r",
+											"}\r",
+											"\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"title\":\"new title\"\n    \n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}{{postEndpoint}}",
+									"host": [
+										"{{BASE_URL}}{{postEndpoint}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "[posts-039] update user post title and body with valid body by invalid post ID",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const testType = pm.iterationData.get(\"TestType\");",
+											"",
+											"if (!testType || !testType.startsWith(\"POSTS-PUT-INVALID-POSTID\")) {",
+											"    console.log(`⏭ Skipping validation for Negative Folder | TestType: ${testType}`);",
+											"    return;",
+											"}",
+											"",
+											"console.log(`✅ Validating Negative Test for TestType: ${testType}`);",
+											"pm.execution.setNextRequest(null);"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const testType = pm.iterationData.get(\"TestType\");\r",
+											"\r",
+											"if (!testType) {\r",
+											"    console.warn(\"⚠️ TestType is not defined in data file.\");\r",
+											"} else {\r",
+											"    console.log(`🔍 Running iteration with TestType: ${testType}`);\r",
+											"}\r",
+											"\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"title\":\"new title\",\n    \"body\":\"new body\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}{{postEndpoint}}/99999",
+									"host": [
+										"{{BASE_URL}}{{postEndpoint}}"
+									],
+									"path": [
+										"99999"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "[posts-040] update user post title and body with missing field",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const testType = pm.iterationData.get(\"TestType\");",
+											"",
+											"if (!testType || !testType.startsWith(\"POSTS-PUT-MISSING-FIELD\")) {",
+											"    console.log(`⏭ Skipping validation for Negative Folder | TestType: ${testType}`);",
+											"    return;",
+											"}",
+											"",
+											"console.log(`✅ Validating Negative Test for TestType: ${testType}`);",
+											"pm.execution.setNextRequest(null);"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const testType = pm.iterationData.get(\"TestType\");\r",
+											"\r",
+											"if (!testType) {\r",
+											"    console.warn(\"⚠️ TestType is not defined in data file.\");\r",
+											"} else {\r",
+											"    console.log(`🔍 Running iteration with TestType: ${testType}`);\r",
+											"}\r",
+											"\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"title\":\"\",\n    \"body\":\"\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}{{postEndpoint}}",
+									"host": [
+										"{{BASE_URL}}{{postEndpoint}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "[posts-041] update user post title with missing field",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const testType = pm.iterationData.get(\"TestType\");",
+											"",
+											"if (!testType || !testType.startsWith(\"POSTS-PATCH-MISSING-FIELD\")) {",
+											"    console.log(`⏭ Skipping validation for Negative Folder | TestType: ${testType}`);",
+											"    return;",
+											"}",
+											"",
+											"console.log(`✅ Validating Negative Test for TestType: ${testType}`);",
+											"pm.execution.setNextRequest(null);"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const testType = pm.iterationData.get(\"TestType\");\r",
+											"\r",
+											"if (!testType) {\r",
+											"    console.warn(\"⚠️ TestType is not defined in data file.\");\r",
+											"} else {\r",
+											"    console.log(`🔍 Running iteration with TestType: ${testType}`);\r",
+											"}\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"title\":\"\",\r\n    \"body\":\"\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}{{postEndpoint}}/{{postId}}",
+									"host": [
+										"{{BASE_URL}}{{postEndpoint}}"
+									],
+									"path": [
+										"{{postId}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "[posts-042] update user post title with invalid postid",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const testType = pm.iterationData.get(\"TestType\");",
+											"",
+											"if (!testType || !testType.startsWith(\"POSTS-PATCH-INVALID-POSTID\")) {",
+											"    console.log(`⏭ Skipping validation for Negative Folder | TestType: ${testType}`);",
+											"    return;",
+											"}",
+											"",
+											"console.log(`✅ Validating Negative Test for TestType: ${testType}`);",
+											"pm.execution.setNextRequest(null);"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const testType = pm.iterationData.get(\"TestType\");\r",
+											"\r",
+											"if (!testType) {\r",
+											"    console.warn(\"⚠️ TestType is not defined in data file.\");\r",
+											"} else {\r",
+											"    console.log(`🔍 Running iteration with TestType: ${testType}`);\r",
+											"}\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}{{postEndpoint}}/99999",
+									"host": [
+										"{{BASE_URL}}{{postEndpoint}}"
+									],
+									"path": [
+										"99999"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"packages": {},
+								"exec": [
+									"\r",
+									"\r",
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"packages": {},
+								"exec": [
+									""
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "./comments",
+					"item": [
+						{
+							"name": "[comments-043]-POST one comment with NO BODY",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const testType = pm.iterationData.get(\"TestType\");",
+											"",
+											"if (!testType || !testType.startsWith(\"COMMENTS-POST-NOBODY\")) {",
+											"    console.log(`⏭ Skipping validation for Negative Folder | TestType: ${testType}`);",
+											"    return;",
+											"}",
+											"",
+											"console.log(`✅ Validating Negative Test for TestType: ${testType}`);",
+											"pm.execution.setNextRequest(null);"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const testType = pm.iterationData.get(\"TestType\");\r",
+											"\r",
+											"if (!testType) {\r",
+											"    console.warn(\"⚠️ TestType is not defined in data file.\");\r",
+											"} else {\r",
+											"    console.log(`🔍 Running iteration with TestType: ${testType}`);\r",
+											"}\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{BASE_URL}}{{commentsEndPoint}}",
+									"host": [
+										"{{BASE_URL}}{{commentsEndPoint}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "[comments-044]-POST one comment with NO EMAIL",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const testType = pm.iterationData.get(\"TestType\");\r",
+											"\r",
+											"if (!testType) {\r",
+											"    console.warn(\"⚠️ TestType is not defined in data file.\");\r",
+											"} else {\r",
+											"    console.log(`🔍 Running iteration with TestType: ${testType}`);\r",
+											"}\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const testType = pm.iterationData.get(\"TestType\");\r",
+											"\r",
+											"if (!testType || !testType.startsWith(\"COMMENTS-POST-NOEMAIL\")) {\r",
+											"    console.log(`⏭ Skipping validation for Negative Folder | TestType: ${testType}`);\r",
+											"    return;\r",
+											"}\r",
+											"\r",
+											"console.log(`✅ Validating Negative Test for TestType: ${testType}`);\r",
+											"pm.execution.setNextRequest(null);"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n            \"id\": 1547,\n            \"post_id\": 1529,\n            \"body\": \"ini comment\"\n        }",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}{{commentsEndPoint}}",
+									"host": [
+										"{{BASE_URL}}{{commentsEndPoint}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "[comments-045]-POST one comment within invalid post_id",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const testType = pm.iterationData.get(\"TestType\");\r",
+											"\r",
+											"if (!testType || !testType.startsWith(\"COMMENTS-POST-INVALID-POSTID\")) {\r",
+											"    console.log(`⏭ Skipping validation for Negative Folder | TestType: ${testType}`);\r",
+											"    return;\r",
+											"}\r",
+											"\r",
+											"console.log(`✅ Validating Negative Test for TestType: ${testType}`);\r",
+											"pm.execution.setNextRequest(null);"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const testType = pm.iterationData.get(\"TestType\");\r",
+											"\r",
+											"if (!testType) {\r",
+											"    console.warn(\"⚠️ TestType is not defined in data file.\");\r",
+											"} else {\r",
+											"    console.log(`🔍 Running iteration with TestType: ${testType}`);\r",
+											"}\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n            \"id\": 1547,\n            \"name\": \"jduy\",\n            \"email\": \"pokokeemail@cling.com\",\n            \"body\": \"ini comment\"\n        }",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}{{commentsEndPoint}}/9999",
+									"host": [
+										"{{BASE_URL}}{{commentsEndPoint}}"
+									],
+									"path": [
+										"9999"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "[comments-046]-POST one comment with null json",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const testType = pm.iterationData.get(\"TestType\");",
+											"",
+											"if (!testType || !testType.startsWith(\"COMMENTS-POST-NULL-JSON\")) {",
+											"    console.log(`⏭ Skipping validation for Negative Folder | TestType: ${testType}`);",
+											"    return;",
+											"}",
+											"",
+											"console.log(`✅ Validating Negative Test for TestType: ${testType}`);",
+											"pm.execution.setNextRequest(null);"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const testType = pm.iterationData.get(\"TestType\");\r",
+											"\r",
+											"if (!testType) {\r",
+											"    console.warn(\"⚠️ TestType is not defined in data file.\");\r",
+											"} else {\r",
+											"    console.log(`🔍 Running iteration with TestType: ${testType}`);\r",
+											"}\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n            \"post_id\": {{NULL}},\r\n            \"name\":  \"{{NULL}}\",\r\n            \"email\": \"{{NULL}}\",\r\n            \"body\": \"{{NULL}}\"\r\n        }",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}{{commentsEndPoint}}",
+									"host": [
+										"{{BASE_URL}}{{commentsEndPoint}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "[comments-047]-GET all  comments with invalid endpoint",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const testType = pm.iterationData.get(\"TestType\");",
+											"",
+											"if (!testType || !testType.startsWith(\"COMMENTS-GETALL-INVALID-ENDPOINT\")) {",
+											"    console.log(`⏭ Skipping validation for Negative Folder | TestType: ${testType}`);",
+											"    return;",
+											"}",
+											"",
+											"console.log(`✅ Validating Negative Test for TestType: ${testType}`);",
+											"pm.execution.setNextRequest(null);"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const testType = pm.iterationData.get(\"TestType\");\r",
+											"\r",
+											"if (!testType) {\r",
+											"    console.warn(\"⚠️ TestType is not defined in data file.\");\r",
+											"} else {\r",
+											"    console.log(`🔍 Running iteration with TestType: ${testType}`);\r",
+											"}\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}/{{commentId}}",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"{{commentId}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "[comments-048]-GET BYID users comments within invalid id",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const testType = pm.iterationData.get(\"TestType\");",
+											"",
+											"if (!testType || !testType.startsWith(\"COMMENTS-GETBY-INVALID-POSTID\")) {",
+											"    console.log(`⏭ Skipping validation for Negative Folder | TestType: ${testType}`);",
+											"    return;",
+											"}",
+											"",
+											"console.log(`✅ Validating Negative Test for TestType: ${testType}`);",
+											"pm.execution.setNextRequest(null);"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const testType = pm.iterationData.get(\"TestType\");\r",
+											"\r",
+											"if (!testType) {\r",
+											"    console.warn(\"⚠️ TestType is not defined in data file.\");\r",
+											"} else {\r",
+											"    console.log(`🔍 Running iteration with TestType: ${testType}`);\r",
+											"}\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}{{commentsEndPoint}}?id=-5",
+									"host": [
+										"{{BASE_URL}}{{commentsEndPoint}}"
+									],
+									"query": [
+										{
+											"key": "id",
+											"value": "-5"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "[comments-049]-PUT one comment within INvalid json",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const testType = pm.iterationData.get(\"TestType\");",
+											"",
+											"if (!testType || !testType.startsWith(\"COMMENTS-PUT-INVALID-JSON\")) {",
+											"    console.log(`⏭ Skipping validation for Negative Folder | TestType: ${testType}`);",
+											"    return;",
+											"}",
+											"",
+											"console.log(`✅ Validating Negative Test for TestType: ${testType}`);",
+											"pm.execution.setNextRequest(null);"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const testType = pm.iterationData.get(\"TestType\");\r",
+											"\r",
+											"if (!testType) {\r",
+											"    console.warn(\"⚠️ TestType is not defined in data file.\");\r",
+											"} else {\r",
+											"    console.log(`🔍 Running iteration with TestType: ${testType}`);\r",
+											"}\r",
+											"\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n            \n            \"name\": \"{{comment_PutName}}\",\n            \"body\": \"{{comment_PutBody}}\"\n        }",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}{{commentsEndPoint}}/{{commentId}}",
+									"host": [
+										"{{BASE_URL}}{{commentsEndPoint}}"
+									],
+									"path": [
+										"{{commentId}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "[comments-050]-PATCH one comment with MISSING FIELD",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const testType = pm.iterationData.get(\"TestType\");",
+											"",
+											"if (!testType || !testType.startsWith(\"COMMENTS-PATCH-MISSING-FIELD\")) {",
+											"    console.log(`⏭ Skipping validation for Negative Folder | TestType: ${testType}`);",
+											"    return;",
+											"}",
+											"",
+											"console.log(`✅ Validating Negative Test for TestType: ${testType}`);",
+											"pm.execution.setNextRequest(null);"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const testType = pm.iterationData.get(\"TestType\");\r",
+											"\r",
+											"if (!testType) {\r",
+											"    console.warn(\"⚠️ TestType is not defined in data file.\");\r",
+											"} else {\r",
+											"    console.log(`🔍 Running iteration with TestType: ${testType}`);\r",
+											"}\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n            \"id\": {{commentId}},\n            \"post_id\": {{postId}},\n            \"email\": \"{{comment_PatchEmail}}\",\n            \"body\": \"{{comment_PatchBody}}\"\n        }",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}{{commentsEndPoint}}/{{commentId}}",
+									"host": [
+										"{{BASE_URL}}{{commentsEndPoint}}"
+									],
+									"path": [
+										"{{commentId}}"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "./delete",
+					"item": [
+						{
+							"name": "[comments-051]-DEL one comment with invalid id",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const testType = pm.iterationData.get(\"TestType\");",
+											"",
+											"if (!testType || !testType.startsWith(\"DELETE-COMMENT-INVALIDID\")) {",
+											"    console.log(`⏭ Skipping validation for Negative Folder | TestType: ${testType}`);",
+											"    return;",
+											"}",
+											"",
+											"console.log(`✅ Validating Negative Test for TestType: ${testType}`);",
+											"pm.execution.setNextRequest(null);"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const testType = pm.iterationData.get(\"TestType\");\r",
+											"\r",
+											"if (!testType) {\r",
+											"    console.warn(\"⚠️ TestType is not defined in data file.\");\r",
+											"} else {\r",
+											"    console.log(`🔍 Running iteration with TestType: ${testType}`);\r",
+											"}\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}{{commentsEndPoint}}/999999",
+									"host": [
+										"{{BASE_URL}}{{commentsEndPoint}}"
+									],
+									"path": [
+										"999999"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "[posts-052] user posts by valid inpost ID",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const testType = pm.iterationData.get(\"TestType\");",
+											"",
+											"if (!testType || !testType.startsWith(\"DELETE-POST-INVALIDID\")) {",
+											"    console.log(`⏭ Skipping validation for Negative Folder | TestType: ${testType}`);",
+											"    return;",
+											"}",
+											"",
+											"console.log(`✅ Validating Negative Test for TestType: ${testType}`);",
+											"pm.execution.setNextRequest(null);"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const testType = pm.iterationData.get(\"TestType\");\r",
+											"\r",
+											"if (!testType) {\r",
+											"    console.warn(\"⚠️ TestType is not defined in data file.\");\r",
+											"} else {\r",
+											"    console.log(`🔍 Running iteration with TestType: ${testType}`);\r",
+											"}\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{BASE_URL}}{{postEndpoint}}/9999",
+									"host": [
+										"{{BASE_URL}}{{postEndpoint}}"
+									],
+									"path": [
+										"9999"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "user posts by valid post ID",
+									"originalRequest": {
+										"method": "DELETE",
+										"header": [],
+										"url": {
+											"raw": "{{BASE_URL}}{{postsEndpoint}}/1601",
+											"host": [
+												"{{BASE_URL}}{{postsEndpoint}}"
+											],
+											"path": [
+												"1601"
+											]
+										}
+									},
+									"_postman_previewlanguage": "Text",
+									"header": [],
+									"cookie": [],
+									"body": ""
+								}
+							]
+						},
+						{
+							"name": "[users-053]- Delete unavailable user",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const testType = pm.iterationData.get(\"TestType\");\r",
+											"\r",
+											"if (!testType || !testType.startsWith(\"DELETE-USER-INVALIDID\")) {\r",
+											"    console.log(`⏭ Skipping validation for Negative Folder | TestType: ${testType}`);\r",
+											"    return;\r",
+											"}\r",
+											"\r",
+											"console.log(`✅ Validating Negative Test for TestType: ${testType}`);\r",
+											"pm.execution.setNextRequest(null);"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const testType = pm.iterationData.get(\"TestType\");\r",
+											"\r",
+											"if (!testType) {\r",
+											"    console.warn(\"⚠️ TestType is not defined in data file.\");\r",
+											"} else {\r",
+											"    console.log(`🔍 Running iteration with TestType: ${testType}`);\r",
+											"}\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{BASE_URL}}{{usersEndpoint}}/00000",
+									"host": [
+										"{{BASE_URL}}{{usersEndpoint}}"
+									],
+									"path": [
+										"00000"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "[misc-001] check ping rate of server",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "HEAD",
+				"header": [],
+				"url": {
+					"raw": "https://gorest.co.in",
+					"protocol": "https",
+					"host": [
+						"gorest",
+						"co",
+						"in"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{BearerToken}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"// Set common values in the environment\r",
+					"pm.environment.set(\"BASE_URL\", \"https://gorest.co.in/public/v1\");\r",
+					"pm.environment.set(\"BearerToken\", \"a64d9dde7c556f9f1629b67bb5af591d459e4e2cc4537b01679a693cce3cd9aa\");\r",
+					"pm.environment.set(\"usersEndpoint\", \"/users\");\r",
+					"pm.environment.set(\"postEndpoint\", \"/posts\");\r",
+					"pm.environment.set(\"commentsEndPoint\", \"/comments\");\r",
+					"\r",
+					"\r",
+					"\r",
+					"// Generate random email\r",
+					"let post_Email = `user_${Math.floor(Math.random() * 100000)}@test.com`;\r",
+					"pm.environment.set(\"post_Email\", post_Email);\r",
+					"console.log(\"Generated Email:\", post_Email);\r",
+					"\r",
+					"// Generate random name (full name)\r",
+					"const firstNames = [\"John\", \"Jane\", \"Alex\", \"Chris\"];\r",
+					"const lastNames = [\"Smith\", \"Johnson\", \"Brown\", \"Davis\"];\r",
+					"const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];\r",
+					"const lastName = lastNames[Math.floor(Math.random() * lastNames.length)];\r",
+					"const post_Name = `${firstName} ${lastName}`;  // String interpolation\r",
+					"pm.environment.set(\"post_Name\", post_Name);\r",
+					"console.log(\"Generated Name:\", post_Name);\r",
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}
