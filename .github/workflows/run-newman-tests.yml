@@ -26,8 +26,8 @@ jobs:
 
       - name: Run Postman Tests
         run: |
-          newman run "GoRest API- CRUD Operations.postman_collection.json" -e "GoRest-QA.postman_environment.json" -d "GoRest.csv" -r cli,html --reporter-html-export newman-report.html
-          # This is your Newman command to run the tests
+          newman run "postman/GoRest API- CRUD Operations.postman_collection.json" -e "postman/GoRest-QA.postman_environment.json" -d "data/GoRest.csv" -r cli,html --reporter-html-export newman-report.html
+          # Adjusted paths to reflect file locations in 'postman' and 'data' folders
 
       - name: Upload Newman Report
         uses: actions/upload-artifact@v2
